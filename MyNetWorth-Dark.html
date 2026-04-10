@@ -802,9 +802,9 @@ let state = {
   ],
   qqq: { shares:3.47, avgCostUSD:351.88, currentPriceUSD:null },
   log: [{
-    month:'APR 2026', netWorth:806500000, change:null,
-    notes:'📊 Initial snapshot. Bibit -2.78%. IDX -19.29%. QQQ +21.47%.',
-    action:'Hold banking stocks. Deploy PayPal to QQQ. Monthly invest Rp 18.7jt.',
+    month:'APR 2026', netWorth:0, change:null,
+    notes:'📊 Initial snapshot. Bibit -2.78%. IDX -19.29%. QQQ +21.47%. PayPal $4,169.',
+    action:'Build PayPal to $5,000 buffer. Deploy surplus monthly to QQQ + Reksa Dana.',
   }],
   checklist:[
     {task:'Check Bibit total portfolio value',done:false},
@@ -856,7 +856,7 @@ let state = {
 
 function loadState(){
   try {
-    const s = localStorage.getItem('wealth_dark_v1');
+    const s = localStorage.getItem('wealth_dark_v2');
     if(s){
       const p = JSON.parse(s);
       if(p.manual) state.manual={...state.manual,...p.manual};
@@ -882,7 +882,7 @@ function loadState(){
 }
 function saveState(){
   try {
-    localStorage.setItem('wealth_dark_v1', JSON.stringify({
+    localStorage.setItem('wealth_dark_v2', JSON.stringify({
       manual:state.manual, log:state.log, checklist:state.checklist,
       idxStocks:state.idxStocks, usStocks:state.usStocks,
       reksadana:state.reksadana, otherAssets:state.otherAssets,
@@ -2971,6 +2971,11 @@ function showToast(msg, duration=2800) {
 // INIT
 // =============================================
 loadState();
+// Auto-fix initial log entry to match live calc() — ensures log always matches NW
+if(state.log.length > 0 && state.log[0].netWorth === 0){
+  state.log[0].netWorth = calc().total;
+  saveState();
+}
 renderAll();
 doRefresh();
 </script>
