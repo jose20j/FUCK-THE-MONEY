@@ -956,6 +956,11 @@ async function doRefresh(){
   await Promise.allSettled([fetchIDX(), fetchUSStocks(), fetchRate()]);
   state.lastFetch=new Date();
   btn.classList.remove('refresh-spin'); btn.style.pointerEvents='';
+  // Update initial log entry AFTER live prices load so it matches dashboard exactly
+  if(state.log.length > 0 && state.log[0].netWorth === 0){
+    state.log[0].netWorth = calc().total;
+    saveState();
+  }
   renderAll();
 }
 
@@ -2971,11 +2976,6 @@ function showToast(msg, duration=2800) {
 // INIT
 // =============================================
 loadState();
-// Auto-fix initial log entry to match live calc() — ensures log always matches NW
-if(state.log.length > 0 && state.log[0].netWorth === 0){
-  state.log[0].netWorth = calc().total;
-  saveState();
-}
 renderAll();
 doRefresh();
 </script>
