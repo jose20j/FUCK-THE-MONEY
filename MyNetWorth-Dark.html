@@ -956,11 +956,6 @@ async function doRefresh(){
   await Promise.allSettled([fetchIDX(), fetchUSStocks(), fetchRate()]);
   state.lastFetch=new Date();
   btn.classList.remove('refresh-spin'); btn.style.pointerEvents='';
-  // Update initial log entry AFTER live prices load so it matches dashboard exactly
-  if(state.log.length > 0 && state.log[0].netWorth === 0){
-    state.log[0].netWorth = calc().total;
-    saveState();
-  }
   renderAll();
 }
 
@@ -1370,6 +1365,18 @@ function renderManage(){
 // SCHEDULE
 // =============================================
 function renderSchedule(c){
+  // Always sync current month's log entry with live NW after price refresh
+  const _logNow = new Date();
+  const _mn = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const _thisMonth = _mn[_logNow.getMonth()] + ' ' + _logNow.getFullYear();
+  const _existIdx = state.log.findIndex(e => e.month === _thisMonth);
+  if(_existIdx >= 0 && state.log[_existIdx].netWorth !== c.total){
+    state.log[_existIdx].netWorth = c.total;
+  } else if(state.log.length > 0 && state.log[0].netWorth === 0){
+    state.log[0].netWorth = c.total;
+    state.log[0].month = _thisMonth;
+  }
+
   // Smart checklist — auto-detect some completions
   const _usPctSch  = (c.usTotal/c.total)*100;
   const _cashRatSch = c.cashVal / ((GOALS.monthlyExpense||5e6)*6);
