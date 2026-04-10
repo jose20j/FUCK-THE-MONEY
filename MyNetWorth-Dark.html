@@ -1,0 +1,2967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d1117">
+<title>Wealth</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b27;
+  --bg3: #1c2333;
+  --card: #1c2333;
+  --card2: #222d40;
+  --border: rgba(255,255,255,0.07);
+  --text: #e6edf3;
+  --muted: #7d8590;
+  --muted2: #4d5566;
+  --blue: #4f8ef7;
+  --blue2: #2d6ef5;
+  --cyan: #3dd9eb;
+  --green: #3fb950;
+  --red: #f85149;
+  --orange: #f0883e;
+  --purple: #bc8cff;
+  --pink: #f778ba;
+  --gold: #e3b341;
+  --accent-grad: linear-gradient(135deg, #4f8ef7, #3dd9eb);
+  --card-grad: linear-gradient(135deg, #1c2333, #222d40);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,17,23,0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: env(safe-area-inset-top,0) 0 0;
+}
+.topbar-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; max-width: 520px; margin: 0 auto;
+}
+.topbar-logo {
+  font-size: 18px; font-weight: 800; letter-spacing: -0.5px;
+  background: var(--accent-grad); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; transition: background 0.2s;
+  color: var(--muted);
+}
+.icon-btn:active { background: var(--card2); }
+.refresh-spin { animation: spin 0.8s linear; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── SCROLL ── */
+.page { max-width: 520px; margin: 0 auto; padding: 0 16px 100px; }
+
+/* ── HERO BALANCE CARDS ── */
+.balance-section { padding: 20px 0 16px; }
+.balance-cards {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 12px;
+}
+.balance-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px;
+  position: relative; overflow: hidden;
+  animation: fadeUp 0.4s ease both;
+}
+.balance-card::before {
+  content: ''; position: absolute;
+  top: -30px; right: -20px;
+  width: 80px; height: 80px; border-radius: 50%;
+  opacity: 0.08;
+}
+.bc-total { grid-column: 1 / -1; background: linear-gradient(135deg, #1a2540, #1e2d4a); border-color: rgba(79,142,247,0.2); }
+.bc-total::before { background: var(--blue); width: 120px; height: 120px; opacity: 0.12; }
+.bc-idx::before { background: var(--red); }
+.bc-rd::before { background: var(--purple); }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.balance-card:nth-child(2) { animation-delay: 0.05s; }
+.balance-card:nth-child(3) { animation-delay: 0.1s; }
+.balance-card:nth-child(4) { animation-delay: 0.15s; }
+
+.bc-label {
+  font-size: 11px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.bc-dots { cursor: pointer; letter-spacing: 2px; color: var(--muted2); }
+.bc-amount {
+  font-size: 22px; font-weight: 800; letter-spacing: -0.8px;
+  color: var(--text); line-height: 1; margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.bc-total .bc-amount { font-size: 30px; letter-spacing: -1.5px; }
+.bc-change {
+  font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 4px;
+}
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+.bc-icon {
+  position: absolute; bottom: 14px; right: 14px;
+  font-size: 28px; opacity: 0.5;
+}
+
+/* ── GOAL BAR ── */
+.goal-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px; margin-bottom: 16px;
+  animation: fadeUp 0.4s 0.2s ease both;
+}
+.goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.goal-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.goal-pct { font-size: 13px; font-weight: 700; color: var(--blue); }
+.goal-track { height: 6px; background: var(--bg3); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+.goal-fill { height: 100%; background: var(--accent-grad); border-radius: 99px; transition: width 1.2s cubic-bezier(0.25,0.46,0.45,0.94); }
+.goal-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+/* ── SECTION HEADER ── */
+.sec-hdr {
+  display: flex; justify-content: space-between; align-items: center;
+  margin: 20px 0 12px;
+}
+.sec-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+.sec-action { font-size: 13px; color: var(--blue); cursor: pointer; font-weight: 600; }
+
+
+
+/* ── PANELS ── */
+.panel { display: none; animation: fadeUp 0.25s ease; }
+.panel.active { display: block; }
+
+/* ── ASSET LIST CARDS ── */
+.asset-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 16px;
+  margin-bottom: 10px; display: flex;
+  align-items: center; gap: 12px;
+  transition: border-color 0.2s;
+}
+.asset-card:active { border-color: rgba(79,142,247,0.3); }
+.asset-logo {
+  width: 42px; height: 42px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.asset-info { flex: 1; min-width: 0; }
+.asset-name { font-size: 14px; font-weight: 600; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.asset-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.asset-right { text-align: right; flex-shrink: 0; }
+.asset-val { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.3px; }
+.asset-gain { font-size: 12px; font-weight: 600; margin-top: 2px; }
+
+/* ── EXPANDED DETAIL ── */
+.detail-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; margin-bottom: 10px;
+}
+.detail-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.detail-name { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+.detail-cat { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.tag {
+  padding: 3px 9px; border-radius: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.tag-blue { background: rgba(79,142,247,0.15); color: var(--blue); }
+.tag-green { background: rgba(63,185,80,0.15); color: var(--green); }
+.tag-red { background: rgba(248,81,73,0.15); color: var(--red); }
+.tag-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+.tag-orange { background: rgba(240,136,62,0.15); color: var(--orange); }
+
+.kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.kv-item label { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px; font-weight: 600; }
+.kv-item span { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.big-val { font-size: 26px; font-weight: 800; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+
+/* ── CHART ── */
+.chart-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; margin-bottom: 10px;
+}
+.chart-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; }
+.bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.bar {
+  width: 100%; border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 1s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.bar-lbl { font-size: 9px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+
+/* Donut chart */
+.donut-wrap { display: flex; align-items: center; gap: 20px; }
+.donut-svg { flex-shrink: 0; }
+.donut-legend { flex: 1; }
+.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.legend-label { color: var(--muted); flex: 1; }
+.legend-pct { font-weight: 700; }
+
+/* ── ALLOCATION BARS ── */
+.alloc-item { margin-bottom: 13px; }
+.alloc-hdr { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.alloc-name { font-size: 13px; color: var(--text); }
+.alloc-pct { font-size: 12px; color: var(--muted); font-weight: 600; }
+.alloc-track { height: 5px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+.alloc-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(0.25,0.46,0.45,0.94); }
+
+/* ── OTHER ASSETS ── */
+.other-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; margin-bottom: 10px;
+}
+.other-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; position: relative;
+}
+.other-row::after {
+  content: ''; position: absolute;
+  bottom: 0; left: 58px; right: 0;
+  height: 1px; background: var(--border);
+}
+.other-row:last-child::after { display: none; }
+
+/* ── SCHEDULE ── */
+.log-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; margin-bottom: 10px;
+  border-left: 3px solid var(--blue);
+}
+.log-month { font-size: 11px; color: var(--blue); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+.log-amount { font-size: 24px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.log-note { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 4px; }
+.log-action { font-size: 12px; color: var(--orange); }
+
+.check-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.check-item:last-child { border-bottom: none; }
+.check-circle {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--muted2); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; transition: all 0.2s; color: transparent;
+}
+.check-item.done .check-circle { background: var(--green); border-color: var(--green); color: white; }
+.check-text { font-size: 14px; transition: color 0.2s; }
+.check-item.done .check-text { color: var(--muted); text-decoration: line-through; }
+
+.ms-item { margin-bottom: 14px; }
+.ms-hdr { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.ms-label { font-size: 13px; font-weight: 600; }
+.ms-pct { font-size: 12px; color: var(--muted); }
+.ms-track { height: 6px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+.ms-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(0.25,0.46,0.45,0.94); }
+
+/* ── MANAGE TAB ── */
+.manage-section { margin-bottom: 20px; }
+.manage-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+}
+.manage-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; position: relative;
+}
+.manage-row::after {
+  content: ''; position: absolute;
+  bottom: 0; left: 16px; right: 0;
+  height: 1px; background: var(--border);
+}
+.manage-row:last-child::after { display: none; }
+.manage-info { flex: 1; min-width: 0; }
+.manage-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.manage-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+.manage-btns { display: flex; gap: 6px; flex-shrink: 0; }
+.m-btn {
+  width: 30px; height: 30px; border-radius: 8px; border: none;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; transition: opacity 0.2s;
+}
+.m-btn:active { opacity: 0.6; }
+.m-edit { background: rgba(79,142,247,0.15); color: var(--blue); }
+.m-del { background: rgba(248,81,73,0.15); color: var(--red); }
+.add-btn-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; color: var(--blue); cursor: pointer;
+  font-size: 14px; font-weight: 600;
+}
+.add-plus { width: 24px; height: 24px; border-radius: 6px; background: rgba(79,142,247,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none; align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  background: var(--bg2); border-radius: 20px 20px 0 0;
+  border: 1px solid var(--border); border-bottom: none;
+  width: 100%; max-width: 520px; max-height: 88vh;
+  overflow-y: auto; padding: 0 0 env(safe-area-inset-bottom,20px);
+  animation: slideUp 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-handle { width: 36px; height: 4px; background: var(--muted2); border-radius: 99px; margin: 12px auto 0; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 12px; }
+.modal-title { font-size: 17px; font-weight: 700; }
+.modal-close { width: 28px; height: 28px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); cursor: pointer; font-size: 14px; color: var(--muted); display: flex; align-items: center; justify-content: center; }
+.modal-body { padding: 0 16px 16px; }
+.dyn-form { display: none; }
+.dyn-form.visible { display: block; }
+.field-group { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 12px; }
+.field-row { display: flex; align-items: center; padding: 0 16px; min-height: 48px; border-bottom: 1px solid var(--border); }
+.field-row:last-child { border-bottom: none; }
+.field-label { font-size: 14px; color: var(--text); min-width: 120px; flex-shrink: 0; font-weight: 500; }
+.field-input { flex: 1; border: none; outline: none; font-family: inherit; font-size: 14px; color: var(--text); background: transparent; text-align: right; padding: 12px 0; font-variant-numeric: tabular-nums; }
+.field-input::placeholder { color: var(--muted2); }
+.field-select { flex: 1; border: none; outline: none; font-family: inherit; font-size: 14px; color: var(--text); background: transparent; text-align: right; padding: 12px 0; -webkit-appearance: none; appearance: none; cursor: pointer; }
+.submit-btn { width: 100%; padding: 14px; border-radius: 12px; background: var(--blue2); color: white; border: none; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; box-shadow: 0 4px 20px rgba(45,110,245,0.4); }
+.submit-btn:active { opacity: 0.8; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(13,17,23,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 8px 0 env(safe-area-inset-bottom,8px);
+  display: flex; max-width: 520px; margin: 0 auto;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 3px; cursor: pointer; padding: 4px 0; transition: opacity 0.15s;
+}
+.nav-item:active { opacity: 0.5; }
+.nav-icon { font-size: 20px; opacity: 0.35; transition: all 0.2s; }
+.nav-label { font-size: 10px; font-weight: 600; color: var(--muted); transition: color 0.2s; letter-spacing: 0.2px; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-item.active .nav-label { color: var(--blue); }
+
+/* ── LIVE DOT ── */
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+.live-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.25); border-radius: 99px; padding: 3px 10px; font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 0.3px; }
+
+/* ── INFO BOX ── */
+.info-box { border-radius: 12px; padding: 13px 15px; margin-bottom: 10px; display: flex; gap: 10px; }
+.info-red { background: rgba(248,81,73,0.08); border: 1px solid rgba(248,81,73,0.2); }
+.info-blue { background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2); }
+.info-orange { background: rgba(240,136,62,0.08); border: 1px solid rgba(240,136,62,0.2); }
+.info-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.info-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* ── WARNING STRIP ── */
+.warn-strip { background: rgba(248,81,73,0.08); border: 1px solid rgba(248,81,73,0.2); border-radius: 10px; padding: 10px 14px; font-size: 12px; color: var(--red); margin-bottom: 10px; }
+
+/* ── FORM (Other tab) ── */
+.form-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
+.form-row { display: flex; align-items: center; padding: 0 16px; min-height: 48px; border-bottom: 1px solid var(--border); }
+.form-row:last-child { border-bottom: none; }
+.form-label { font-size: 14px; color: var(--text); min-width: 130px; flex-shrink: 0; font-weight: 500; }
+.form-input { flex: 1; border: none; outline: none; font-family: inherit; font-size: 14px; color: var(--text); background: transparent; text-align: right; padding: 12px 0; font-variant-numeric: tabular-nums; }
+.form-input::placeholder { color: var(--muted2); }
+.save-btn { width: calc(100% - 32px); margin: 0 16px 16px; padding: 14px; border-radius: 12px; background: var(--blue2); color: white; border: none; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(45,110,245,0.4); transition: opacity 0.15s; }
+.save-btn:active { opacity: 0.8; }
+
+.r-tab {
+  padding: 7px 14px; border-radius: 99px; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); font-family: inherit;
+  font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+  transition: all 0.2s;
+}
+.r-tab.active { background: var(--blue2); color: white; border-color: var(--blue2); box-shadow: 0 4px 12px rgba(45,110,245,0.3); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: rgba(30,40,60,0.96); color: var(--text);
+  border: 1px solid rgba(63,185,80,0.4); border-radius: 12px;
+  padding: 12px 20px; font-size: 14px; font-weight: 600;
+  z-index: 300; white-space: nowrap;
+  opacity: 0; transition: all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  max-width: 90vw; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (min-width: 520px) {
+  .bottom-nav { left: 50%; transform: translateX(-50%); right: auto; width: 520px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <span class="topbar-logo">⚡ Wealth</span>
+    <div class="topbar-right">
+      <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+      <div class="icon-btn" id="refreshBtn" onclick="doRefresh()">↻</div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HERO BALANCE -->
+  <div class="balance-section">
+    <div class="balance-cards">
+      <!-- Total -->
+      <div class="balance-card bc-total">
+        <div class="bc-label">Total Net Worth <span class="bc-dots">···</span></div>
+        <div class="bc-amount" id="heroAmount">Loading…</div>
+        <div class="bc-change" id="heroSub"><span style="color:var(--muted);font-size:11px;" id="heroUpdated">Refreshing…</span></div>
+        <span class="bc-icon">💰</span>
+      </div>
+      <!-- Reksa Dana -->
+      <div class="balance-card">
+        <div class="bc-label">Reksa Dana</div>
+        <div class="bc-amount" id="card-rd" style="font-size:18px;">—</div>
+        <div class="bc-change" id="card-rd-chg">—</div>
+        <span class="bc-icon">📊</span>
+      </div>
+      <!-- IDX Stocks -->
+      <div class="balance-card bc-idx">
+        <div class="bc-label">IDX Stocks</div>
+        <div class="bc-amount" id="card-idx" style="font-size:18px;">—</div>
+        <div class="bc-change" id="card-idx-chg">—</div>
+        <span class="bc-icon">🇮🇩</span>
+      </div>
+    </div>
+
+    <!-- Goal -->
+    <div class="goal-card">
+      <div class="goal-header">
+        <span class="goal-title">🎯 Goal: Rp 1 Miliar</span>
+        <span class="goal-pct" id="goalPct">—%</span>
+      </div>
+      <div class="goal-track"><div class="goal-fill" id="goalFill" style="width:0%"></div></div>
+      <div class="goal-labels"><span id="goalCurrent">—</span><span>Rp 1,000,000,000</span></div>
+    </div>
+  </div>
+
+
+
+  <!-- ===== OVERVIEW ===== -->
+  <div class="panel active" id="panel-overview">
+
+    <!-- Allocation Chart -->
+    <div class="chart-card">
+      <div class="chart-title">Portfolio Allocation</div>
+      <div id="allocBars"></div>
+    </div>
+
+    <!-- Bar chart of asset values -->
+    <div class="chart-card">
+      <div class="chart-title">Asset Value Breakdown</div>
+      <div class="bar-chart" id="barChart"></div>
+    </div>
+
+    <!-- Health Scores -->
+    <div class="sec-hdr"><span class="sec-title">Financial Health</span></div>
+    <div class="chart-card" id="healthCard"></div>
+
+    <!-- Actions -->
+    <!-- Dynamic Action Items -->
+    <div id="action-items-container"></div>
+
+    <!-- Financial Freedom Progress -->
+    <div id="freedom-tracker"></div>
+
+  </div>
+
+  <!-- ===== REKSA DANA ===== -->
+  <div class="panel" id="panel-reksadana">
+    <div id="rd-panel-content"></div>
+    <div class="info-box info-blue">
+      <span style="font-size:18px;">ℹ️</span>
+      <div>
+        <div class="info-title" style="color:var(--blue)">NAV Updates Daily</div>
+        <div class="info-text">Reksa Dana NAV updates once after market close. Update current values in the Manage tab when you get your monthly Bibit statement.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STOCKS ===== -->
+  <div class="panel" id="panel-stocks">
+    <div class="sec-hdr">
+      <span class="sec-title">🇮🇩 IDX Stocks</span>
+      <span class="live-pill"><span class="live-dot"></span>Live</span>
+    </div>
+    <div class="warn-strip" id="idx-warn">⚠️ All positions are banking stocks — 100% sector concentration risk.</div>
+    <div class="detail-card" style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;color:var(--muted)">Total IDX Value</span>
+        <div style="text-align:right">
+          <div style="font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;" id="idx-total">—</div>
+          <div id="idx-total-gain" style="font-size:12px;font-weight:600;margin-top:2px;">—</div>
+        </div>
+      </div>
+    </div>
+    <div id="idx-cards"></div>
+
+    <div class="sec-hdr" style="margin-top:20px;">
+      <span class="sec-title">🇺🇸 US Stocks</span>
+      <span class="live-pill"><span class="live-dot"></span>Live</span>
+    </div>
+    <div id="us-cards"></div>
+  </div>
+
+  <!-- ===== OTHER ===== -->
+  <div class="panel" id="panel-other">
+    <div class="sec-hdr"><span class="sec-title">Manual Assets</span></div>
+    <div id="other-assets-list"></div>
+
+    <div class="info-box info-orange" style="margin-top:8px;">
+      <span style="font-size:18px;">💡</span>
+      <div>
+        <div class="info-title" style="color:var(--orange)">Koperasi Passive Income</div>
+        <div class="info-text" id="kop-info-text">Rp 215 juta × 7–10%/yr = <strong style="color:var(--text)">Rp 1.25–1.79 juta/month</strong> passive. Reinvest to compound.</div>
+      </div>
+    </div>
+
+    <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Monthly Update</span></div>
+
+    <!-- PayPal Income Tracker -->
+    <div style="background:rgba(79,142,247,0.06);border:1px solid rgba(79,142,247,0.2);border-radius:12px;padding:14px 16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-size:16px;">💵</span>
+        <span style="font-size:13px;font-weight:700;color:var(--blue);">PayPal Income Calculator</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div style="background:var(--bg3);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Last month balance</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);">$<span id="paypal-prev-val">—</span></div>
+        </div>
+        <div style="background:var(--bg3);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">This month income</div>
+          <div style="font-size:13px;font-weight:700;color:#3fb950;" id="paypal-income-display">$—</div>
+        </div>
+      </div>
+      <div class="form-card" style="margin-bottom:8px;">
+        <div class="form-row">
+          <span class="form-label">End Balance ($)</span>
+          <input class="form-input" id="input-paypal" type="number" placeholder="4121.52" step="0.01" oninput="calcPaypalIncome()">
+        </div>
+      </div>
+      <div id="paypal-income-preview" style="display:none;font-size:12px;color:var(--muted);line-height:1.8;padding:8px 10px;background:var(--bg3);border-radius:8px;margin-top:4px;"></div>
+    </div>
+
+    <div class="form-card" style="margin-bottom:12px;">
+      <div class="form-row"><span class="form-label">Cash (Rp)</span><input class="form-input" id="input-cash" type="number" placeholder="55000000"></div>
+      <div class="form-row"><span class="form-label">Koperasi (Rp)</span><input class="form-input" id="input-koperasi" type="number" placeholder="215000000"></div>
+      <div class="form-row"><span class="form-label">Tanah (Rp)</span><input class="form-input" id="input-tanah" type="number" placeholder="210000000"></div>
+      <div class="form-row"><span class="form-label">Bibit Total (Rp)</span><input class="form-input" id="input-bibit" type="number" placeholder="177367076"></div>
+    </div>
+    <button class="save-btn" onclick="saveManualAssets()">Save & Update Net Worth</button>
+
+
+  </div>
+
+  <!-- ===== MANAGE ===== -->
+  <div class="panel" id="panel-manage">
+    <div class="manage-section">
+      <div class="sec-hdr"><span class="sec-title">IDX Stocks</span></div>
+      <div class="manage-card">
+        <div id="manage-idx-list"></div>
+        <div class="add-btn-row" onclick="openModal('idx')">
+          <div class="add-plus">＋</div><span>Add IDX Stock</span>
+        </div>
+      </div>
+    </div>
+    <div class="manage-section">
+      <div class="sec-hdr"><span class="sec-title">US Stocks</span></div>
+      <div class="manage-card">
+        <div id="manage-us-list"></div>
+        <div class="add-btn-row" onclick="openModal('us')">
+          <div class="add-plus">＋</div><span>Add US Stock / ETF</span>
+        </div>
+      </div>
+    </div>
+    <div class="manage-section">
+      <div class="sec-hdr"><span class="sec-title">Reksa Dana</span></div>
+      <div class="manage-card">
+        <div id="manage-rd-list"></div>
+        <div class="add-btn-row" onclick="openModal('rd')">
+          <div class="add-plus">＋</div><span>Add Reksa Dana</span>
+        </div>
+      </div>
+    </div>
+    <div class="manage-section">
+      <div class="sec-hdr"><span class="sec-title">Other Assets</span></div>
+      <div class="manage-card">
+        <div id="manage-other-list"></div>
+        <div class="add-btn-row" onclick="openModal('other')">
+          <div class="add-plus">＋</div><span>Add Other Asset</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REPOSITION ===== -->
+  <div class="panel" id="panel-reposition">
+    <!-- Sub-tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;">
+      <button class="r-tab active" id="rtab-rebalance" onclick="switchRTab('rebalance')">⚖️ Rebalance</button>
+      <button class="r-tab" id="rtab-discover" onclick="switchRTab('discover')">🔍 Discover</button>
+      <button class="r-tab" id="rtab-fundamentals" onclick="switchRTab('fundamentals')">📊 Fundamentals</button>
+    </div>
+    <div id="reposition-content"></div>
+    <div id="discover-content" style="display:none;"></div>
+    <div id="fundamentals-content" style="display:none;"></div>
+  </div>
+
+  <!-- ===== SCHEDULE ===== -->
+  <div class="panel" id="panel-schedule">
+    <div class="sec-hdr"><span class="sec-title">Monthly Checklist</span></div>
+    <div class="chart-card" id="checklistEl"></div>
+
+    <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Milestones</span></div>
+    <div class="chart-card" id="milestonesEl"></div>
+
+    <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Monthly Log</span></div>
+    <div id="logEl"></div>
+  </div>
+
+</div><!-- end page -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Add Asset</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- IDX Stock Form — simplified -->
+      <div class="dyn-form" id="form-idx">
+        <div class="field-group">
+          <div class="field-row"><span class="field-label">Ticker</span><input class="field-input" id="idx-ticker" placeholder="e.g. BBCA" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="field-row"><span class="field-label">Total Invested (Rp)</span><input class="field-input" id="idx-invested" type="number" placeholder="e.g. 31104086" oninput="autoCalcIDX()"></div>
+          <div class="field-row"><span class="field-label">Total Lots</span><input class="field-input" id="idx-lots" type="number" placeholder="auto or fill manually" oninput="autoCalcIDX()"></div>
+        </div>
+        <!-- Auto-calculated preview -->
+        <div id="idx-preview" style="display:none;background:var(--bg3);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--muted);line-height:1.9;"></div>
+        <button class="submit-btn" onclick="submitIDX()">Save Stock</button>
+      </div>
+
+      <!-- US Stock Form — simplified -->
+      <div class="dyn-form" id="form-us">
+        <div style="font-size:11px;color:var(--muted);padding:0 4px 10px;line-height:1.6;">📱 Get values from Stockbit → Portfolio → Assets → QQQ</div>
+        <div class="field-group">
+          <div class="field-row"><span class="field-label">Ticker</span><input class="field-input" id="us-ticker" placeholder="e.g. QQQ" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="field-row"><span class="field-label">Shares</span><input class="field-input" id="us-shares" type="number" placeholder="e.g. 3.47" step="0.001"></div>
+          <div class="field-row"><span class="field-label">Avg Cost (USD $)</span><input class="field-input" id="us-avgcost-input" type="number" placeholder="e.g. 335.21" step="0.01"></div>
+          <div class="field-row"><span class="field-label">Invested (Rp)</span><input class="field-input" id="us-invested-idr" type="number" placeholder="e.g. 19863841"></div>
+          <div class="field-row" style="background:rgba(79,142,247,0.04);">
+            <span class="field-label" style="color:var(--blue);">NAV Value (Rp)</span>
+            <input class="field-input" id="us-nav-idr" type="number" placeholder="from Stockbit e.g. 24128450">
+          </div>
+          <div class="field-row" style="background:rgba(79,142,247,0.04);">
+            <span class="field-label" style="color:var(--blue);">Gain (Rp)</span>
+            <input class="field-input" id="us-gain-idr" type="number" placeholder="from Stockbit e.g. 4264609">
+          </div>
+          <div class="field-row" style="background:rgba(79,142,247,0.04);">
+            <span class="field-label" style="color:var(--blue);">Gain %</span>
+            <input class="field-input" id="us-gain-pct" type="number" placeholder="e.g. 21.47" step="0.01">
+          </div>
+        </div>
+        <button class="submit-btn" onclick="submitUS()">Save Stock</button>
+      </div>
+
+      <!-- Reksa Dana Form — simplified -->
+      <div class="dyn-form" id="form-rd">
+        <div class="field-group">
+          <div class="field-row"><span class="field-label">Fund Name</span><input class="field-input" id="rd-fname" placeholder="e.g. TRIM Kas 2 Kelas A"></div>
+          <div class="field-row">
+            <span class="field-label">Category</span>
+            <select class="field-select" id="rd-cat">
+              <option value="Pasar Uang">Pasar Uang</option>
+              <option value="Obligasi">Obligasi</option>
+              <option value="Saham">Saham</option>
+              <option value="Campuran">Campuran</option>
+            </select>
+          </div>
+          <div class="field-row"><span class="field-label">Total Invested (Rp)</span><input class="field-input" id="rd-invested" type="number" placeholder="e.g. 2143356" oninput="autoCalcRD()"></div>
+          <div class="field-row"><span class="field-label">Current Value (Rp)</span><input class="field-input" id="rd-curval" type="number" placeholder="from Bibit app" oninput="autoCalcRD()"></div>
+        </div>
+        <div id="rd-preview" style="display:none;background:var(--bg3);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--muted);line-height:1.9;"></div>
+        <button class="submit-btn" onclick="submitRD()">Save Fund</button>
+      </div>
+
+      <!-- Other Asset Form — simplified -->
+      <div class="dyn-form" id="form-other">
+        <div class="field-group">
+          <div class="field-row"><span class="field-label">Asset Name</span><input class="field-input" id="oth-name" placeholder="e.g. Tanah, Koperasi…"></div>
+          <div class="field-row">
+            <span class="field-label">Currency</span>
+            <select class="field-select" id="oth-cur">
+              <option value="IDR">IDR (Rupiah)</option>
+              <option value="USD">USD (Dollar)</option>
+            </select>
+          </div>
+          <div class="field-row"><span class="field-label">Value</span><input class="field-input" id="oth-val" type="number" placeholder="e.g. 210000000" oninput="autoCalcOther()"></div>
+          <div class="field-row"><span class="field-label">Icon (emoji)</span><input class="field-input" id="oth-icon" placeholder="🏕️" maxlength="2"></div>
+          <div class="field-row"><span class="field-label">Notes</span><input class="field-input" id="oth-notes" placeholder="e.g. 7-10%/yr interest"></div>
+        </div>
+        <div id="oth-preview" style="display:none;background:var(--bg3);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--muted);line-height:1.9;"></div>
+        <button class="submit-btn" onclick="submitOther()">Save Asset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-overview" onclick="switchTab('overview',null,'overview')">
+    <span class="nav-icon">📊</span><span class="nav-label">Overview</span>
+  </div>
+  <div class="nav-item" id="nav-reksadana" onclick="switchTab('reksadana',null,'reksadana')">
+    <span class="nav-icon">📈</span><span class="nav-label">Reksa Dana</span>
+  </div>
+  <div class="nav-item" id="nav-stocks" onclick="switchTab('stocks',null,'stocks')">
+    <span class="nav-icon">🏦</span><span class="nav-label">Stocks</span>
+  </div>
+  <div class="nav-item" id="nav-other" onclick="switchTab('other',null,'other')">
+    <span class="nav-icon">🏕️</span><span class="nav-label">Other</span>
+  </div>
+  <div class="nav-item" id="nav-manage" onclick="switchTab('manage',null,'manage')">
+    <span class="nav-icon">⚙️</span><span class="nav-label">Manage</span>
+  </div>
+  <div class="nav-item" id="nav-reposition" onclick="switchTab('reposition',null,'reposition')">
+    <span class="nav-icon">🎯</span><span class="nav-label">Reposition</span>
+  </div>
+  <div class="nav-item" id="nav-schedule" onclick="switchTab('schedule',null,'schedule')">
+    <span class="nav-icon">📅</span><span class="nav-label">Schedule</span>
+  </div>
+</div>
+
+<script>
+// =============================================
+// STATE
+// =============================================
+let state = {
+  usdToIdr: 16400,
+  lastFetch: null,
+  manual: {
+    paypalUSD: 4121.52,
+    cash: 55000000,
+    koperasi: 215000000,
+    tanah: 210000000,
+    bibitTotal: 177367076,  // F The Money reksa dana only (updated April 2026)
+    // Income & expenses — editable
+    totalMonthlyIncome: 23730000,  // salary + PayPal + all sources combined
+    monthlyExpenses: 5000000,
+    // PayPal income tracking
+    paypalPrevBalance: 972.03,     // balance at start of month (from last month's ending)
+    paypalWithdrawals: 0,          // withdrawals to bank this month (USD)
+  },
+  idxStocks: [
+    { ticker:'BBCA', name:'Bank Central Asia',      lots:36, avgBuy:8640.02, invested:31104086, currentPrice:null, fallback:6475 },
+    { ticker:'BBRI', name:'Bank Rakyat Indonesia',  lots:50, avgBuy:4078.50, invested:20392543, currentPrice:null, fallback:3280 },
+    { ticker:'BMRI', name:'Bank Mandiri',            lots:38, avgBuy:5157.72, invested:19599355, currentPrice:null, fallback:4650 },
+  ],
+  qqq: { shares:3.47, avgCostUSD:351.88, currentPriceUSD:null },
+  log: [{
+    month:'APR 2026', netWorth:806500000, change:null,
+    notes:'📊 Initial snapshot. Bibit -2.78%. IDX -19.29%. QQQ +21.47%.',
+    action:'Hold banking stocks. Deploy PayPal to QQQ. Monthly invest Rp 18.7jt.',
+  }],
+  checklist:[
+    {task:'Check Bibit total portfolio value',done:false},
+    {task:'Check BBCA / BBRI / BMRI prices',done:false},
+    {task:'Check QQQ price in USD',done:false},
+    {task:'Update PayPal USD balance',done:false},
+    {task:'Record koperasi interest received',done:false},
+    {task:'Estimate tanah current market value',done:false},
+    {task:'Update values in Other tab',done:false},
+    {task:'Calculate new total net worth',done:false},
+    {task:'Compare vs last month',done:false},
+    {task:'Decide: rebalance needed?',done:false},
+  ],
+  reksadana: [
+    { id:'rd1', name:'TRIM Kas 2 Kelas A', category:'Pasar Uang', units:1097.4253, navBuy:1953.08, invested:2143356, currentValue:2214779 },
+    { id:'rd2', name:'Manulife Dana Kas Syariah', category:'Pasar Uang', units:0, navBuy:0, invested:25000, currentValue:26889 },
+    { id:'rd3', name:'Manulife Obligasi Unggulan Kelas A', category:'Obligasi', units:6546.1047, navBuy:2444.20, invested:16000000, currentValue:17538716 },
+    { id:'rd4', name:'ABF Indonesia Bond Index Fund', category:'Obligasi', units:0, navBuy:0, invested:20000000, currentValue:19833091 },
+    { id:'rd5', name:'BNP Paribas SRI KEHATI RK1', category:'Saham', units:117489.5922, navBuy:1080.61, invested:126960000, currentValue:116584922 },
+  { id:'rd6', name:'Grow Obligasi Optima Dinamis Kelas O', category:'Obligasi', units:19546.3331, navBuy:989.96, invested:19350000, currentValue:21168679 },
+  ],
+  usStocks: [
+    {
+      id:'us1', ticker:'QQQ', name:'Nasdaq100 ETF',
+      shares: 3.47,
+      avgCostUSD: 335.21,
+      investedIDR: 19863841,       // from Stockbit
+      currentValueIDR: 24128450,   // from Stockbit Net Asset Value — update monthly
+      gainIDR: 4264609,            // from Stockbit Unrealized P&L
+      gainPctIDR: 21.47,           // from Stockbit
+      currentPriceUSD: null,
+      fallbackPriceUSD: 610.19,
+    },
+  ],
+  otherAssets: [
+    { id:'oa1', name:'PayPal Balance', currency:'USD', value:4121.52, icon:'💵', notes:'Linked to BCA 7687' },
+    { id:'oa2', name:'Cash / Tabungan', currency:'IDR', value:55000000, icon:'🏦', notes:'Bank savings' },
+    { id:'oa3', name:'Koperasi', currency:'IDR', value:215000000, icon:'🤝', notes:'7–10%/yr interest' },
+    { id:'oa4', name:'Tanah', currency:'IDR', value:210000000, icon:'🏕️', notes:'~5% appreciation/yr' },
+  ],
+  editMode: null, editId: null,
+};
+
+function loadState(){
+  try {
+    const s = localStorage.getItem('wealth_dark_v1');
+    if(s){
+      const p = JSON.parse(s);
+      if(p.manual) state.manual={...state.manual,...p.manual};
+      if(p.log){
+        // Normalize old month formats: "April 2026" → "APR 2026"
+        const mm={'January':'JAN','February':'FEB','March':'MAR','April':'APR',
+          'May':'MAY','June':'JUN','July':'JUL','August':'AUG',
+          'September':'SEP','October':'OCT','November':'NOV','December':'DEC'};
+        state.log = p.log.map(e => {
+          const parts = (e.month||'').split(' ');
+          if(parts[0] && parts[0].length > 3)
+            e.month = (mm[parts[0]]||parts[0].slice(0,3).toUpperCase())+' '+parts[1];
+          return e;
+        });
+      }
+      if(p.checklist) state.checklist=p.checklist;
+      if(p.idxStocks) state.idxStocks=p.idxStocks;
+      if(p.usStocks) state.usStocks=p.usStocks;
+      if(p.reksadana) state.reksadana=p.reksadana;
+      if(p.otherAssets) state.otherAssets=p.otherAssets;
+    }
+  } catch(e){}
+}
+function saveState(){
+  try {
+    localStorage.setItem('wealth_dark_v1', JSON.stringify({
+      manual:state.manual, log:state.log, checklist:state.checklist,
+      idxStocks:state.idxStocks, usStocks:state.usStocks,
+      reksadana:state.reksadana, otherAssets:state.otherAssets,
+    }));
+  } catch(e){}
+}
+
+// =============================================
+// FORMAT
+// =============================================
+const rp = n => {
+  const a=Math.abs(n);
+  if(a>=1e9) return 'Rp '+(n/1e9).toFixed(2)+'M';
+  if(a>=1e6) return 'Rp '+(a/1e6).toFixed(1)+' jt';
+  return 'Rp '+Math.round(a).toLocaleString('id-ID');
+};
+const rpF = n => 'Rp '+Math.round(Math.abs(n)).toLocaleString('id-ID');
+const pct = n => (n>=0?'+':'')+n.toFixed(2)+'%';
+const gc = n => n>=0 ? 'pos' : 'neg';
+const gs = n => n>=0 ? '+' : '−';
+
+// =============================================
+// CALC
+// =============================================
+function calc(){
+  const idxTotal = state.idxStocks.reduce((s,st)=>{
+    const p=st.currentPrice||st.fallback;
+    return s+p*st.lots*100;
+  },0);
+  const usTotal = state.usStocks.reduce((s,us)=>{
+    // Use Stockbit NAV value if available, else calculate from live price
+    if(us.currentValueIDR) return s + us.currentValueIDR;
+    const p = us.currentPriceUSD || us.fallbackPriceUSD || us.avgCostUSD;
+    return s + us.shares * p * state.usdToIdr;
+  },0);
+  // investedIDR for correct gain display
+  const usTotalInvested = state.usStocks.reduce((s,us)=>{
+    return s + (us.investedIDR || us.shares * us.avgCostUSD * state.usdToIdr);
+  },0);
+  const otherTotal = state.otherAssets.reduce((s,oa)=>{
+    return s+(oa.currency==='USD'?oa.value*state.usdToIdr:oa.value);
+  },0);
+  // bibitTotal = full Bibit portfolio value (reksa dana + Bibit Saham)
+  // Updated monthly via the Other tab form. IDX stocks tracked live on top.
+  const bibit = state.manual.bibitTotal;
+  // Dynamic other asset values — available everywhere
+  const _r = state.usdToIdr || 16400;  // exchange rate shorthand
+  const _kopC  = state.otherAssets.find(o=>o.name.toLowerCase().includes('koperasi'));
+  const _tanC  = state.otherAssets.find(o=>o.name.toLowerCase().includes('tanah'));
+  const _cashC = state.otherAssets.find(o=>o.name.toLowerCase().includes('cash')||o.name.toLowerCase().includes('tabungan'));
+  const _ppC   = state.otherAssets.find(o=>o.name.toLowerCase().includes('paypal'));
+  const kopVal  = _kopC  ? (_kopC.currency==='USD'?_kopC.value*_r:_kopC.value)   : (state.manual.koperasi||215000000);
+  const tanVal  = _tanC  ? (_tanC.currency==='USD'?_tanC.value*_r:_tanC.value)   : (state.manual.tanah||210000000);
+  const cashVal = _cashC ? (_cashC.currency==='USD'?_cashC.value*_r:_cashC.value): (state.manual.cash||55000000);
+  const ppVal   = _ppC   ? (_ppC.currency==='USD'?_ppC.value*_r:_ppC.value)      : ((state.manual.paypalUSD||0)*_r);
+
+  return {
+    bibit, idxTotal, usTotal, usTotalInvested, otherTotal,
+    kopVal, tanVal, cashVal, ppVal,
+    total: bibit+idxTotal+usTotal+otherTotal,
+  };
+}
+
+// =============================================
+// FETCH
+// =============================================
+async function doRefresh(){
+  const btn=document.getElementById('refreshBtn');
+  btn.classList.add('refresh-spin'); btn.style.pointerEvents='none';
+  document.getElementById('heroUpdated').textContent='Refreshing…';
+  await Promise.allSettled([fetchIDX(), fetchUSStocks(), fetchRate()]);
+  state.lastFetch=new Date();
+  btn.classList.remove('refresh-spin'); btn.style.pointerEvents='';
+  renderAll();
+}
+
+async function fetchIDX(){
+  for(const st of state.idxStocks){
+    let fetched = false;
+    const endpoints = [
+      `https://query1.finance.yahoo.com/v8/finance/chart/${st.ticker}.JK?interval=1d&range=1d`,
+      `https://query2.finance.yahoo.com/v8/finance/chart/${st.ticker}.JK?interval=1d&range=1d`,
+      `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${st.ticker}.JK`,
+    ];
+    const proxies = [
+      `https://api.allorigins.win/get?url=`,
+      `https://corsproxy.io/?`,
+    ];
+    for(const proxy of proxies){
+      if(fetched) break;
+      for(const endpoint of endpoints){
+        if(fetched) break;
+        try {
+          const proxyUrl = proxy + encodeURIComponent(endpoint);
+          const r=await fetch(proxyUrl,{signal:AbortSignal.timeout(6000)});
+          const j=await r.json();
+          const raw = j.contents ? JSON.parse(j.contents) : j;
+          // Try chart endpoint
+          let p = raw?.chart?.result?.[0]?.meta?.regularMarketPrice;
+          // Try quote endpoint
+          if(!p) p = raw?.quoteResponse?.result?.[0]?.regularMarketPrice;
+          if(p && p > 100 && p < 100000){ st.currentPrice=p; st.fallback=p; fetched=true; break; }
+        }catch(e){}
+      }
+    }
+  }
+}
+async function fetchUSStocks(){
+  for(const us of state.usStocks){
+    let fetched = false;
+    const endpoints = [
+      `https://query1.finance.yahoo.com/v8/finance/chart/${us.ticker}?interval=1d&range=1d`,
+      `https://query2.finance.yahoo.com/v8/finance/chart/${us.ticker}?interval=1d&range=1d`,
+      `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${us.ticker}`,
+    ];
+    const proxies = [
+      `https://api.allorigins.win/get?url=`,
+      `https://corsproxy.io/?`,
+    ];
+    for(const proxy of proxies){
+      if(fetched) break;
+      for(const endpoint of endpoints){
+        if(fetched) break;
+        try {
+          const r=await fetch(proxy + encodeURIComponent(endpoint),{signal:AbortSignal.timeout(6000)});
+          const j=await r.json();
+          const raw = j.contents ? JSON.parse(j.contents) : j;
+          let p = raw?.chart?.result?.[0]?.meta?.regularMarketPrice;
+          if(!p) p = raw?.quoteResponse?.result?.[0]?.regularMarketPrice;
+          // Validate: QQQ should be $300-$600, general US stocks $1-$2000
+          const priceOk = p > 50 && p < 2000;
+          if(p && priceOk){
+            us.currentPriceUSD = p;
+            us.fallbackPriceUSD = p;
+            if(state.qqq && us.ticker==='QQQ') state.qqq.currentPriceUSD = p;
+            fetched = true; break;
+          }
+        }catch(e){}
+      }
+    }
+  }
+}
+async function fetchRate(){
+  try {
+    const url=`https://query1.finance.yahoo.com/v8/finance/chart/USDIDR=X?interval=1d&range=1d`;
+    const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,{signal:AbortSignal.timeout(8000)});
+    const j=await r.json(); const d=JSON.parse(j.contents);
+    const rate=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    if(rate&&rate>10000) state.usdToIdr=rate;
+  }catch(e){}
+}
+
+// =============================================
+// RENDER ALL
+// =============================================
+function renderAll(){
+  const c=calc();
+  const rdInv = state.reksadana.reduce((s,r)=>s+r.invested,0) || 165128356;
+  const rdGain = c.bibit - rdInv;
+  const idxInv=state.idxStocks.reduce((s,st)=>s+st.invested,0);
+  const idxGain=c.idxTotal-idxInv;
+
+  // Hero
+  document.getElementById('heroAmount').textContent=rp(c.total);
+  document.getElementById('heroUpdated').textContent=state.lastFetch
+    ?state.lastFetch.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'})
+    :'Tap ↻ to refresh';
+
+  // Cards
+  document.getElementById('card-rd').textContent=rp(c.bibit);
+  const rdChgEl=document.getElementById('card-rd-chg');
+  // Total Bibit invested = reksa dana invested + IDX bibit saham invested
+  const bibitSahamInv = state.idxStocks.reduce((s,st)=>s+st.invested,0);
+  const totalBibitInv = rdInv + bibitSahamInv;
+  const bibitGainPct = totalBibitInv > 0 ? (rdGain/totalBibitInv)*100 : 0;
+  rdChgEl.innerHTML=`<span class="${gc(rdGain)}">${gs(rdGain)}${rp(Math.abs(rdGain))} (${pct(bibitGainPct)})</span>`;
+
+  document.getElementById('card-idx').textContent=rp(c.idxTotal);
+  const idxChgEl=document.getElementById('card-idx-chg');
+  idxChgEl.innerHTML=`<span class="${gc(idxGain)}">${gs(idxGain)}${rp(Math.abs(idxGain))} (${pct((idxGain/idxInv)*100)})</span>`;
+
+  // Goal
+  const mp=Math.min((c.total/1e9)*100,100);
+  document.getElementById('goalPct').textContent=mp.toFixed(1)+'%';
+  document.getElementById('goalFill').style.width=mp+'%';
+  document.getElementById('goalCurrent').textContent=rp(c.total);
+
+  renderOverview(c);
+  renderActions(c);
+  renderReksadana();
+  renderReposition();
+  renderStocks(c);
+  renderOther(c);
+  renderManage();
+  renderSchedule(c);
+}
+
+// =============================================
+// OVERVIEW
+// =============================================
+function renderOverview(c){
+  // Use pre-calculated values from calc()
+  const {kopVal, tanVal, cashVal, ppVal} = c;
+  const allocs=[
+    {label:'Reksa Dana',  val:c.bibit,       color:'#bc8cff'},
+    {label:'IDX Stocks',  val:c.idxTotal,    color:'#f85149'},
+    {label:'US Stocks',   val:c.usTotal,     color:'#3fb950'},
+    {label:'Koperasi',    val:kopVal,         color:'#4f8ef7'},
+    {label:'Tanah',       val:tanVal,         color:'#f0883e'},
+    {label:'Cash+PayPal', val:cashVal+ppVal,  color:'#3dd9eb'},
+  ];
+  document.getElementById('allocBars').innerHTML=allocs.map(a=>{
+    const p=Math.max((a.val/c.total)*100,0);
+    return `<div class="alloc-item">
+      <div class="alloc-hdr"><span class="alloc-name">${a.label}</span><span class="alloc-pct">${p.toFixed(1)}% · ${rp(a.val)}</span></div>
+      <div class="alloc-track"><div class="alloc-fill" style="width:${p}%;background:${a.color};"></div></div>
+    </div>`;
+  }).join('');
+
+  // Bar chart
+  const bars=[
+    {label:'RD',   val:c.bibit,      color:'#bc8cff'},
+    {label:'IDX',  val:c.idxTotal,   color:'#f85149'},
+    {label:'US',   val:c.usTotal,    color:'#3fb950'},
+    {label:'Kop',  val:kopVal,        color:'#4f8ef7'},
+    {label:'Tanah',val:tanVal,        color:'#f0883e'},
+    {label:'Cash', val:cashVal+ppVal, color:'#3dd9eb'},
+  ];
+  const maxVal=Math.max(...bars.map(b=>b.val));
+  document.getElementById('barChart').innerHTML=bars.map(b=>{
+    const h=Math.max((b.val/maxVal)*100,4);
+    return `<div class="bar-wrap">
+      <div class="bar" style="height:${h}%;background:linear-gradient(180deg,${b.color},${b.color}88);"></div>
+      <span class="bar-lbl">${b.label}</span>
+    </div>`;
+  }).join('');
+
+  // Health
+  // Dynamic health scores — recalculate from live portfolio
+  const _totalNW   = c.total;
+  const _usPct     = (c.usTotal/_totalNW)*100;
+  const _idxPct    = (c.idxTotal/_totalNW)*100;
+  const _rdPct     = (c.bibit/_totalNW)*100;
+  const _kopPct    = (c.kopVal/_totalNW)*100;
+  const _cashRatio = c.cashVal / ((GOALS.monthlyExpense||5000000)*6); // 1.0 = exactly 6mo
+  const _surplus   = (GOALS.totalMonthlyIncome||23730000) - (GOALS.monthlyExpense||5000000);
+  const _allBanking = state.idxStocks.every(s=>['BBCA','BBRI','BMRI','BBNI'].includes(s.ticker));
+
+  // Net Worth score (age 26 benchmark: Rp 500jt=3, 750jt=4, 1B=5)
+  const _nwScore = _totalNW >= 1e9 ? 5 : _totalNW >= 750e6 ? 4 : _totalNW >= 500e6 ? 3 : _totalNW >= 250e6 ? 2 : 1;
+  const _nwColor = _nwScore>=4?'#3fb950':_nwScore===3?'#f0883e':'#f85149';
+
+  // Diversification score (penalize 100% banking, reward US exposure)
+  const _divScore = (!_allBanking && _usPct>10) ? 5 : (!_allBanking || _usPct>5) ? 4 : _usPct>0 ? 3 : 2;
+  const _divColor = _divScore>=4?'#3fb950':_divScore===3?'#f0883e':'#f85149';
+
+  // Cashflow score
+  const _cfScore = _surplus >= 15e6 ? 5 : _surplus >= 10e6 ? 4 : _surplus >= 5e6 ? 3 : _surplus >= 0 ? 2 : 1;
+  const _cfColor = _cfScore>=4?'#3fb950':_cfScore===3?'#f0883e':'#f85149';
+
+  // Emergency fund score
+  const _efScore = _cashRatio >= 1.0 ? 5 : _cashRatio >= 0.75 ? 4 : _cashRatio >= 0.5 ? 3 : 2;
+  const _efColor = _efScore>=4?'#3fb950':_efScore===3?'#f0883e':'#f85149';
+
+  // US Exposure score
+  const _usScore = _usPct >= 25 ? 5 : _usPct >= 15 ? 4 : _usPct >= 8 ? 3 : _usPct >= 3 ? 2 : 1;
+  const _usColor = _usScore>=4?'#3fb950':_usScore===3?'#f0883e':'#f85149';
+
+  // Design business score (based on PayPal income vs salary)
+  const _ppIncome = (GOALS.totalMonthlyIncome||23730000) - 6825000;
+  const _bizScore = _ppIncome >= 20e6 ? 5 : _ppIncome >= 15e6 ? 4 : _ppIncome >= 10e6 ? 3 : _ppIncome >= 5e6 ? 2 : 1;
+  const _bizColor = _bizScore>=4?'#3fb950':_bizScore===3?'#f0883e':'#f85149';
+
+  const health=[
+    {label:'Net Worth (Age 26)',     score:_nwScore,  color:_nwColor},
+    {label:'Debt Management',        score:5,         color:'#3fb950'}, // always 5 — debt free
+    {label:'Asset Diversification',  score:_divScore, color:_divColor},
+    {label:'Monthly Cashflow',       score:_cfScore,  color:_cfColor},
+    {label:'Emergency Fund',         score:_efScore,  color:_efColor},
+    {label:'US Exposure',            score:_usScore,  color:_usColor},
+    {label:'Design Business',        score:_bizScore, color:_bizColor},
+  ];
+  document.getElementById('healthCard').innerHTML=health.map(h=>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:13px;color:var(--muted)">${h.label}</span>
+      <div style="display:flex;gap:2px;">${[1,2,3,4,5].map(i=>`<div style="width:12px;height:12px;border-radius:3px;background:${i<=h.score?h.color:'var(--bg3)'};"></div>`).join('')}</div>
+    </div>`
+  ).join('').replace(/<div style="[^"]*border-bottom[^"]*"><\/div>$/,'');
+}
+
+// =============================================
+// REKSA DANA
+// =============================================
+function renderReksadana(){
+  const catColors={'Pasar Uang':'#4f8ef7','Obligasi':'#3fb950','Saham':'#f85149','Campuran':'#f0883e'};
+  const catTags={'Pasar Uang':'tag-blue','Obligasi':'tag-green','Saham':'tag-red','Campuran':'tag-orange'};
+  const grouped={};
+  state.reksadana.forEach(r=>{ if(!grouped[r.category]) grouped[r.category]=[]; grouped[r.category].push(r); });
+  let html='';
+  Object.entries(grouped).forEach(([cat,funds])=>{
+    html+=`<div style="display:flex;align-items:center;gap:8px;margin:16px 0 10px;">
+      <div style="width:3px;height:16px;border-radius:2px;background:${catColors[cat]||'#4f8ef7'};"></div>
+      <span style="font-size:13px;font-weight:700;color:${catColors[cat]||'var(--text)'};text-transform:uppercase;letter-spacing:0.8px;">${cat}</span>
+    </div>`;
+    funds.forEach(rd=>{
+      const gain=rd.currentValue-rd.invested;
+      const gainPct=(gain/rd.invested)*100;
+      html+=`<div class="detail-card">
+        <div class="detail-hdr">
+          <div style="width:40px;height:40px;border-radius:10px;background:${catColors[cat]||'#4f8ef7'}22;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:${catColors[cat]||'#4f8ef7'};">${cat.charAt(0)}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="detail-name" style="font-size:14px;">${rd.name}</div>
+            <span class="tag ${catTags[cat]||'tag-blue'}" style="margin-top:3px;display:inline-block;">${cat}</span>
+          </div>
+          <span style="font-size:13px;font-weight:700;" class="${gc(gain)}">${pct(gainPct)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+          <span style="font-size:12px;color:var(--muted)">Current Value</span>
+          <span class="big-val ${gc(gain)}" style="font-size:22px;">${rpF(rd.currentValue)}</span>
+        </div>
+        <div class="kv-grid">
+          <div class="kv-item"><label>Invested</label><span>${rpF(rd.invested)}</span></div>
+          <div class="kv-item"><label>Gain/Loss</label><span class="${gc(gain)}">${gs(gain)}${rpF(gain)}</span></div>
+          ${rd.units?`<div class="kv-item"><label>Units</label><span>${rd.units.toLocaleString('id-ID',{maximumFractionDigits:4})}</span></div>`:''}
+          ${rd.navBuy?`<div class="kv-item"><label>Buy NAV</label><span>Rp ${rd.navBuy.toLocaleString('id-ID')}</span></div>`:''}
+        </div>
+      </div>`;
+    });
+  });
+  document.getElementById('rd-panel-content').innerHTML=html;
+}
+
+// =============================================
+// STOCKS
+// =============================================
+function renderStocks(c){
+  const idxInv=state.idxStocks.reduce((s,st)=>s+st.invested,0);
+  const idxGain=c.idxTotal-idxInv;
+  document.getElementById('idx-total').textContent=rpF(c.idxTotal);
+  const igEl=document.getElementById('idx-total-gain');
+  igEl.textContent=gs(idxGain)+rpF(idxGain)+' ('+pct((idxGain/idxInv)*100)+')';
+  igEl.className=gc(idxGain);
+
+  const colorMap={BBCA:'#4f8ef7',BBRI:'#f85149',BMRI:'#f0883e'};
+  document.getElementById('idx-cards').innerHTML=state.idxStocks.map(st=>{
+    const p=st.currentPrice||st.fallback;
+    const val=p*st.lots*100;
+    const gain=val-st.invested;
+    const gainPct=(gain/st.invested)*100;
+    const col=colorMap[st.ticker]||'#bc8cff';
+    const isLive=!!st.currentPrice;
+    return `<div class="detail-card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:${col}22;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:${col};">${st.ticker}</div>
+        <div style="flex:1;">
+          <div style="font-size:15px;font-weight:700;">${st.ticker}</div>
+          <div style="font-size:12px;color:var(--muted);">${st.name} · ${st.lots} lots · <span style="color:${isLive?'#3fb950':'#f0883e'};font-size:10px;font-weight:700;">${isLive?'● LIVE':'○ CACHED'}</span></div>
+        </div>
+        <span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:8px;background:${gainPct>=0?'rgba(63,185,80,0.12)':'rgba(248,81,73,0.12)'};" class="${gc(gain)}">${pct(gainPct)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+        <span style="font-size:12px;color:var(--muted);">Current Value</span>
+        <span style="font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;" class="${gc(gain)}">${rpF(val)}</span>
+      </div>
+      <div class="kv-grid">
+        <div class="kv-item"><label>Live Price</label><span>Rp ${p.toLocaleString('id-ID')}</span></div>
+        <div class="kv-item"><label>Avg Buy</label><span>Rp ${st.avgBuy.toLocaleString('id-ID')}</span></div>
+        <div class="kv-item"><label>Invested</label><span>${rpF(st.invested)}</span></div>
+        <div class="kv-item"><label>Gain/Loss</label><span class="${gc(gain)}">${gs(gain)}${rpF(gain)}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // US Stocks
+  document.getElementById('us-cards').innerHTML=state.usStocks.map(us=>{
+    const p = us.currentPriceUSD || us.fallbackPriceUSD || us.avgCostUSD;
+    const usdVal = us.shares * p;
+    // Use Stockbit NAV if available, else calculate from live price
+    const idrVal = us.currentValueIDR || (usdVal * state.usdToIdr);
+    const investedIDR = us.investedIDR || (us.shares * us.avgCostUSD * state.usdToIdr);
+    // Use Stockbit gain if available
+    const gainIDR = us.gainIDR !== undefined ? us.gainIDR : (idrVal - investedIDR);
+    const gainPctIDR = us.gainPctIDR !== undefined ? us.gainPctIDR : ((gainIDR / investedIDR) * 100);
+    const isStockbitVal = !!us.currentValueIDR;
+    // USD P&L
+    const usdCost = us.shares * us.avgCostUSD;
+    const gainUSD = usdVal - usdCost;
+    const gainPctUSD = (gainUSD / usdCost) * 100;
+    return `<div class="detail-card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:rgba(61,217,235,0.12);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#3dd9eb;">${us.ticker}</div>
+        <div style="flex:1;">
+          <div style="font-size:15px;font-weight:700;">${us.ticker}</div>
+          <div style="font-size:12px;color:var(--muted);">${us.name} · ${us.shares} shares · <span style="color:${us.currentPriceUSD?'#3fb950':'#f0883e'};font-size:10px;font-weight:700;">${us.currentPriceUSD?'● LIVE':'○ CACHED'}</span></div>
+        </div>
+        <span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:8px;background:${gainPctIDR>=0?'rgba(63,185,80,0.12)':'rgba(248,81,73,0.12)'};" class="${gc(gainIDR)}">${gainPctIDR>=0?'+':''}${gainPctIDR.toFixed(2)}%</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+        <span style="font-size:12px;color:var(--muted);">IDR Value <span style="font-size:10px;color:${isStockbitVal?'#4f8ef7':'var(--muted2)'};">${isStockbitVal?'(Stockbit NAV)':'(live calc)'}</span></span>
+        <span style="font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;" class="${gc(gainIDR)}">${rpF(idrVal)}</span>
+      </div>
+      <div class="kv-grid">
+        <div class="kv-item"><label>Live Price</label><span>$${p.toFixed(2)}</span></div>
+        <div class="kv-item"><label>Avg Cost/share</label><span>$${us.avgCostUSD}</span></div>
+        <div class="kv-item"><label>USD Gain</label><span class="${gc(gainUSD)}">${gainUSD>=0?'+':''}$${gainUSD.toFixed(2)} (${pct(gainPctUSD)})</span></div>
+        <div class="kv-item"><label>IDR Gain (incl. forex)</label><span class="${gc(gainIDR)}">${gainIDR>=0?'+':'−'}${rpF(Math.abs(gainIDR))}</span></div>
+        <div class="kv-item"><label>Invested (IDR)</label><span>${rpF(investedIDR)}</span></div>
+        <div class="kv-item"><label>USD/IDR (live)</label><span>${state.usdToIdr.toLocaleString()}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =============================================
+// OTHER ASSETS
+// =============================================
+function renderOther(c){
+  updateIncomePlaceholders();
+  // Update Koperasi passive income box dynamically
+  const kopAmt = c.kopVal || (state.manual.koperasi||215000000);
+  const kopMin = Math.round(kopAmt*0.07/12);
+  const kopMax = Math.round(kopAmt*0.10/12);
+  const kopInfoEl = document.getElementById('kop-info-text');
+  if(kopInfoEl) kopInfoEl.innerHTML = `${rp(kopAmt)} × 7–10%/yr = <strong style="color:var(--text)">${rp(kopMin)}–${rp(kopMax)}/month</strong> passive. Reinvest to compound.`;
+
+  document.getElementById('other-assets-list').innerHTML=`<div class="other-card">${
+    state.otherAssets.map(oa=>{
+      const val=oa.currency==='USD'?oa.value*state.usdToIdr:oa.value;
+      const dispVal=oa.currency==='USD'?`${rpF(val)} <span style="font-size:11px;color:var(--muted)">$${oa.value.toLocaleString()}</span>`:rpF(val);
+      return `<div class="other-row">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${oa.icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:600;">${oa.name}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:1px;">${oa.notes||''}</div>
+        </div>
+        <div style="text-align:right;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;">${dispVal}</div>
+      </div>`;
+    }).join('')
+  }</div>`;
+}
+
+// =============================================
+// MANAGE TAB
+// =============================================
+function renderManage(){
+  document.getElementById('manage-idx-list').innerHTML=state.idxStocks.map(st=>{
+    const p=st.currentPrice||st.fallback; const val=p*st.lots*100; const gain=val-st.invested;
+    return `<div class="manage-row">
+      <div class="manage-info"><div class="manage-name">${st.ticker} · ${st.lots} lots</div><div class="manage-sub">Avg Rp ${st.avgBuy.toLocaleString('id-ID')} · <span class="${gc(gain)}">${gs(gain)}${rp(Math.abs(gain))}</span></div></div>
+      <div class="manage-btns"><button class="m-btn m-edit" onclick="openEditIDX('${st.ticker}')">✎</button><button class="m-btn m-del" onclick="deleteIDX('${st.ticker}')">✕</button></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('manage-us-list').innerHTML=state.usStocks.map(us=>{
+    const p=us.currentPriceUSD||us.fallbackPriceUSD||us.avgCostUSD; const val=us.shares*p; const cost=us.shares*us.avgCostUSD; const gain=val-cost;
+    return `<div class="manage-row">
+      <div class="manage-info"><div class="manage-name">${us.ticker} · ${us.shares} shares</div><div class="manage-sub">Avg $${us.avgCostUSD} · <span class="${gc(gain)}">${gs(gain)}$${Math.abs(gain).toFixed(2)}</span></div></div>
+      <div class="manage-btns"><button class="m-btn m-edit" onclick="openEditUS('${us.id}')">✎</button><button class="m-btn m-del" onclick="deleteUS('${us.id}')">✕</button></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('manage-rd-list').innerHTML=state.reksadana.map(rd=>{
+    const gain=rd.currentValue-rd.invested;
+    return `<div class="manage-row">
+      <div class="manage-info"><div class="manage-name">${rd.name}</div><div class="manage-sub">${rd.category} · <span class="${gc(gain)}">${gs(gain)}${rp(Math.abs(gain))}</span></div></div>
+      <div class="manage-btns"><button class="m-btn m-edit" onclick="openEditRD('${rd.id}')">✎</button><button class="m-btn m-del" onclick="deleteRD('${rd.id}')">✕</button></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('manage-other-list').innerHTML=state.otherAssets.map(oa=>{
+    const val=oa.currency==='USD'?oa.value*state.usdToIdr:oa.value;
+    return `<div class="manage-row">
+      <div class="manage-info"><div class="manage-name">${oa.icon} ${oa.name}</div><div class="manage-sub">${oa.notes||''} · ${rp(val)}</div></div>
+      <div class="manage-btns"><button class="m-btn m-edit" onclick="openEditOther('${oa.id}')">✎</button><button class="m-btn m-del" onclick="deleteOther('${oa.id}')">✕</button></div>
+    </div>`;
+  }).join('');
+}
+
+// =============================================
+// SCHEDULE
+// =============================================
+function renderSchedule(c){
+  // Smart checklist — auto-detect some completions
+  const _usPctSch  = (c.usTotal/c.total)*100;
+  const _cashRatSch = c.cashVal / ((GOALS.monthlyExpense||5e6)*6);
+  const smartChecks = {
+    'Check QQQ price in USD':          !!state.usStocks[0]?.currentPriceUSD,
+    'Update Bibit reksa dana values':  c.bibit > 0,
+    'Emergency fund ≥ 6× expenses':   _cashRatSch >= 1.0,
+    'US exposure > 10%':               _usPctSch >= 10,
+  };
+  document.getElementById('checklistEl').innerHTML=state.checklist.map((item,i)=>{
+    // Auto-detect done state for smart items
+    const autoDone = smartChecks[item.task] !== undefined ? smartChecks[item.task] : null;
+    const isDone = autoDone !== null ? autoDone : item.done;
+    return `<div class="check-item ${isDone?'done':''}" onclick="toggleCheck(${i})">
+      <div class="check-circle">${isDone?'✓':''}</div>
+      <span class="check-text">${item.task}</span>
+      ${autoDone===true?'<span style="font-size:10px;color:#3fb950;margin-left:4px;">auto</span>':''}
+    </div>`;
+  }).join('');
+
+  // Dynamic milestones with ETA
+  const annualGrowthSch = c.total * 0.08;
+  const surplusSch = (GOALS.totalMonthlyIncome||23730000) - (GOALS.monthlyExpense||5000000);
+  const annualTotalSch = annualGrowthSch + surplusSch * 12;
+  const monthlyTotalSch = annualTotalSch / 12;
+
+  const milestones=[
+    {label:'Rp 900 juta',  target:9e8,   icon:'⚡', color:'#f0883e'},
+    {label:'Rp 1 Miliar',  target:1e9,   icon:'🎯', color:'#4f8ef7'},
+    {label:'Rp 1.5 Miliar',target:1.5e9, icon:'🚀', color:'#3fb950'},
+    {label:'Rp 2 Miliar',  target:2e9,   icon:'💫', color:'#bc8cff'},
+    {label:'Rp 3 Miliar (Freedom!)', target:3e9, icon:'🏝️', color:'#3dd9eb'},
+  ];
+  document.getElementById('milestonesEl').innerHTML=milestones.map(m=>{
+    const p = Math.min((c.total/m.target)*100, 100);
+    const gap = Math.max(0, m.target - c.total);
+    const monthsAway = gap > 0 ? Math.ceil(gap / monthlyTotalSch) : 0;
+    const eta = monthsAway === 0
+      ? '<span style="color:#3fb950;font-weight:700;">✅ Achieved!</span>'
+      : monthsAway <= 6
+      ? '<span style="color:#3fb950;font-size:11px;">~'+monthsAway+' months away</span>'
+      : monthsAway <= 24
+      ? '<span style="color:#f0883e;font-size:11px;">~'+Math.ceil(monthsAway/12*10)/10+' years</span>'
+      : '<span style="color:var(--muted);font-size:11px;">~'+Math.ceil(monthsAway/12)+' years</span>';
+    return `<div class="ms-item">
+      <div class="ms-hdr">
+        <span class="ms-label" style="color:${m.color}">${m.icon} ${m.label}</span>
+        <span class="ms-pct">${p.toFixed(1)}%</span>
+      </div>
+      <div class="ms-track"><div class="ms-fill" style="width:${p}%;background:${m.color};"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;">
+        <span style="font-size:11px;color:var(--muted);">${gap>0?'Rp '+Math.round(gap/1e6)+'jt remaining':''}</span>
+        ${eta}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('logEl').innerHTML=[...state.log].reverse().map(e=>{
+    const chHtml=e.change?`<div class="${gc(e.change)}" style="font-size:14px;font-weight:600;margin-bottom:6px;">${gs(e.change)}${rpF(Math.abs(e.change))}</div>`:'';
+    return `<div class="log-card">
+      <div class="log-month">${e.month}</div>
+      <div class="log-amount">${rp(e.netWorth)}</div>
+      ${chHtml}
+      <div class="log-note">📊 ${e.notes}</div>
+      <div class="log-action">→ ${e.action}</div>
+    </div>`;
+  }).join('');
+}
+
+// =============================================
+// INTERACTIONS
+// =============================================
+function switchTab(name, segEl, navId){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navEl=document.getElementById('nav-'+(navId||name));
+  if(navEl) navEl.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleCheck(i){ state.checklist[i].done=!state.checklist[i].done; saveState(); renderSchedule(calc()); }
+
+function saveManualAssets(){
+  const paypal=parseFloat(document.getElementById('input-paypal').value)||state.manual.paypalUSD;
+  const cash=parseFloat(document.getElementById('input-cash').value)||state.manual.cash;
+  const koperasi=parseFloat(document.getElementById('input-koperasi').value)||state.manual.koperasi;
+  const tanah=parseFloat(document.getElementById('input-tanah').value)||state.manual.tanah;
+  const bibit=parseFloat(document.getElementById('input-bibit').value)||state.manual.bibitTotal;
+  const prev=calc().total;
+
+  // Auto-calculate PayPal income = end balance - last month's balance
+  const prevPaypalBal  = state.manual.paypalPrevBalance || state.manual.paypalUSD || 0;
+  const paypalIncomeUSD = paypal - prevPaypalBal;
+  const paypalIncomeIDR = paypalIncomeUSD * (state.usdToIdr || 16400);
+  const newTotalIncome  = Math.max(0, Math.round(paypalIncomeIDR)); // pure PayPal income this month
+
+  state.manual={
+    ...state.manual,
+    paypalUSD: paypal,
+    cash, koperasi, tanah, bibitTotal: bibit,
+    paypalPrevBalance: paypal,   // end becomes next month's start automatically
+    totalMonthlyIncome: newTotalIncome > 0 ? newTotalIncome : state.manual.totalMonthlyIncome,
+  };
+  // Sync otherAssets
+  state.otherAssets.forEach(oa=>{
+    const n=oa.name.toLowerCase();
+    if(n.includes('paypal')) oa.value=paypal;
+    if(n.includes('cash')||n.includes('tabungan')) oa.value=cash;
+    if(n.includes('koperasi')) oa.value=koperasi;
+    if(n.includes('tanah')) oa.value=tanah;
+  });
+  const next=calc().total; const change=next-prev;
+  state.checklist=state.checklist.map(c=>({...c,done:false}));
+  // Auto-log this month's update
+  const logNow = new Date();
+  const monthNames = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const monthLabel = monthNames[logNow.getMonth()] + ' ' + logNow.getFullYear();
+
+  // Build auto-note from what changed
+  const noteparts = [];
+  const bibitNew  = state.manual.bibitTotal;
+  const idxNow    = state.idxStocks.reduce((s,st)=>s+(st.currentPrice||st.fallback)*st.lots*100, 0);
+  const idxInvNow = state.idxStocks.reduce((s,st)=>s+st.invested, 0);
+  const idxGainPctNow = ((idxNow-idxInvNow)/idxInvNow*100).toFixed(1);
+  const rdInvNow  = state.reksadana.reduce((s,r)=>s+r.invested, 0);
+  const rdGainPct = ((bibitNew-rdInvNow)/rdInvNow*100).toFixed(1);
+  const usNow     = state.usStocks[0];
+  if(usNow?.gainPctIDR !== undefined) noteparts.push('QQQ '+( usNow.gainPctIDR>=0?'+':'')+usNow.gainPctIDR.toFixed(1)+'%');
+  noteparts.push('Bibit '+( (bibitNew-rdInvNow)>=0?'+':'')+rdGainPct+'%');
+  noteparts.push('IDX '+(idxGainPctNow>=0?'+':'')+idxGainPctNow+'%');
+
+  // PayPal income this month
+  const ppIncome = (paypal - prevPaypalBal);
+  if(ppIncome > 0) noteparts.push('PayPal +$'+ppIncome.toFixed(0));
+
+  // Build action suggestion based on biggest gap
+  const usPct2 = (state.usStocks.reduce((s,u)=>s+(u.currentValueIDR||0),0) / next * 100);
+  const autoAction = usPct2 < 15
+    ? 'Priority: deploy PayPal → QQQ to grow US exposure'
+    : usPct2 < 25
+    ? 'Keep investing: monthly surplus split US ETF + Reksa Dana'
+    : 'US target on track — focus on Koperasi compounding';
+
+  // Check if log entry for this month already exists
+  const existingIdx = state.log.findIndex(e => e.month === monthLabel);
+  // Recalculate to make 100% sure it matches what dashboard shows
+  const finalNW = calc().total;
+  const logEntry = {
+    month: monthLabel,
+    netWorth: finalNW,
+    change: finalNW - prev,
+    notes: '📊 ' + noteparts.join('. '),
+    action: autoAction,
+  };
+
+  if(existingIdx >= 0) {
+    // Update existing entry for this month
+    state.log[existingIdx] = logEntry;
+  } else {
+    // Add new entry
+    state.log.push(logEntry);
+    // Keep max 24 months
+    if(state.log.length > 24) state.log.shift();
+  }
+
+  // Reset discover/fundamentals so they re-render with new data
+  window._discoverLoaded = false;
+  window._fundamentalsLoaded = false;
+
+  saveState(); renderAll();
+  ['input-paypal','input-cash','input-koperasi','input-tanah','input-bibit'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  const pp=document.getElementById('paypal-income-preview'); if(pp) pp.style.display='none';
+
+  showToast('✅ Updated! Net Worth: ' + rp(finalNW) + ' · Log saved');
+}
+
+// Modal
+// =============================================
+// AUTO CALC HELPERS
+// =============================================
+function rpPreview(n){ return 'Rp '+Math.round(Math.abs(n)).toLocaleString('id-ID'); }
+
+function autoCalcIDX(){
+  const invested = parseFloat(document.getElementById('idx-invested').value)||0;
+  const lots = parseFloat(document.getElementById('idx-lots').value)||0;
+  const ticker = document.getElementById('idx-ticker').value.toUpperCase().trim();
+  const preview = document.getElementById('idx-preview');
+  if(!invested){ preview.style.display='none'; return; }
+
+  // Try to get live price
+  const st = state.idxStocks.find(s=>s.ticker===ticker);
+  const livePrice = st ? (st.currentPrice||st.fallback) : null;
+  const currentVal = livePrice && lots ? livePrice*lots*100 : invested;
+  const gain = currentVal - invested;
+  const gainPct = invested ? (gain/invested)*100 : 0;
+  const avgBuy = lots ? (invested/(lots*100)).toFixed(2) : '—';
+
+  let html = `📊 Total Invested: <b style="color:var(--text)">${rpPreview(invested)}</b><br>`;
+  if(lots) html += `📦 Lots: <b style="color:var(--text)">${lots}</b> &nbsp;|&nbsp; Avg Buy: <b style="color:var(--text)">Rp ${parseFloat(avgBuy).toLocaleString('id-ID')}</b><br>`;
+  if(livePrice) html += `💹 Live Price: <b style="color:var(--text)">Rp ${livePrice.toLocaleString('id-ID')}</b><br>`;
+  if(livePrice && lots){
+    const g = gain>=0?'<span style="color:#3fb950">':'<span style="color:#f85149">';
+    html += `📈 Current Value: ${g}<b>${rpPreview(currentVal)}</b> (${gain>=0?'+':''}${gainPct.toFixed(2)}%)</span>`;
+  }
+  preview.innerHTML = html;
+  preview.style.display = 'block';
+}
+
+function autoCalcUs(){ autoCalcUS(); }
+function autoCalcUS(){
+  const investedUSD = parseFloat(document.getElementById('us-invested-usd').value)||0;
+  const shares = parseFloat(document.getElementById('us-shares').value)||0;
+  const ticker = document.getElementById('us-ticker').value.toUpperCase().trim();
+  const preview = document.getElementById('us-preview');
+  if(!investedUSD && !shares){ preview.style.display='none'; return; }
+
+  const us = state.usStocks.find(s=>s.ticker===ticker);
+  const livePrice = us ? (us.currentPriceUSD||us.avgCostUSD) : null;
+  const investedIDR = investedUSD * state.usdToIdr;
+
+  let autoShares = shares;
+  let avgCostUSD = 0;
+  if(shares && investedUSD) avgCostUSD = investedUSD/shares;
+  else if(livePrice && investedUSD){ autoShares = (investedUSD/livePrice); avgCostUSD = livePrice; }
+
+  const currentUSD = livePrice && autoShares ? livePrice*autoShares : investedUSD;
+  const gain = currentUSD - investedUSD;
+  const gainPct = investedUSD ? (gain/investedUSD)*100 : 0;
+
+  let html = `💵 Invested: <b style="color:var(--text)">$${investedUSD.toFixed(2)}</b> ≈ <b style="color:var(--text)">${rpPreview(investedIDR)}</b><br>`;
+  if(autoShares) html += `📦 Shares: <b style="color:var(--text)">${autoShares.toFixed(4)}</b>`;
+  if(avgCostUSD) html += ` &nbsp;|&nbsp; Avg Cost: <b style="color:var(--text)">$${avgCostUSD.toFixed(2)}</b><br>`;
+  else html += '<br>';
+  if(livePrice){
+    html += `💹 Live Price: <b style="color:var(--text)">$${livePrice.toFixed(2)}</b><br>`;
+    const g = gain>=0?'<span style="color:#3fb950">':'<span style="color:#f85149">';
+    html += `📈 Current Value: ${g}<b>$${currentUSD.toFixed(2)}</b> (${gain>=0?'+':''}${gainPct.toFixed(2)}%)</span>`;
+  }
+  preview.innerHTML = html;
+  preview.style.display = 'block';
+}
+
+function autoCalcRD(){
+  const invested = parseFloat(document.getElementById('rd-invested').value)||0;
+  const curval = parseFloat(document.getElementById('rd-curval').value)||0;
+  const preview = document.getElementById('rd-preview');
+  if(!invested){ preview.style.display='none'; return; }
+
+  const current = curval||invested;
+  const gain = current - invested;
+  const gainPct = invested ? (gain/invested)*100 : 0;
+  const g = gain>=0?'<span style="color:#3fb950">':'<span style="color:#f85149">';
+
+  let html = `💰 Invested: <b style="color:var(--text)">${rpPreview(invested)}</b><br>`;
+  if(curval) html += `📊 Current Value: <b style="color:var(--text)">${rpPreview(curval)}</b><br>`;
+  html += `📈 Gain/Loss: ${g}<b>${gain>=0?'+':''}${rpPreview(gain)} (${gain>=0?'+':''}${gainPct.toFixed(2)}%)</b></span>`;
+  preview.innerHTML = html;
+  preview.style.display = 'block';
+}
+
+function autoCalcOther(){
+  const val = parseFloat(document.getElementById('oth-val').value)||0;
+  const cur = document.getElementById('oth-cur').value;
+  const preview = document.getElementById('oth-preview');
+  if(!val){ preview.style.display='none'; return; }
+
+  const idrVal = cur==='USD' ? val*state.usdToIdr : val;
+  let html = `💰 Value: <b style="color:var(--text)">${rpPreview(idrVal)}</b>`;
+  if(cur==='USD') html += ` <span style="color:var(--muted)">(= $${val.toLocaleString()} × ${state.usdToIdr.toLocaleString()})</span>`;
+  preview.innerHTML = html;
+  preview.style.display = 'block';
+}
+
+function openModal(type,editId){
+  state.editMode=type; state.editId=editId||null;
+  const titles={idx:'IDX Stock',us:'US Stock / ETF',rd:'Reksa Dana',other:'Other Asset'};
+  document.getElementById('modalTitle').textContent=(editId?'Edit ':'Add ')+titles[type];
+  ['form-idx','form-us','form-rd','form-other'].forEach(f=>document.getElementById(f).classList.remove('visible'));
+  document.getElementById('form-'+type).classList.add('visible');
+  if(editId) prefillForm(type,editId);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function prefillForm(type,id){
+  if(type==='idx'){ const st=state.idxStocks.find(s=>s.ticker===id); if(st){document.getElementById('idx-ticker').value=st.ticker;document.getElementById('idx-lots').value=st.lots;document.getElementById('idx-invested').value=st.invested; setTimeout(autoCalcIDX,50);} }
+  else if(type==='us'){ const us=state.usStocks.find(s=>s.id===id); if(us){
+    document.getElementById('us-ticker').value=us.ticker;
+    document.getElementById('us-shares').value=us.shares||'';
+    document.getElementById('us-avgcost-input').value=us.avgCostUSD||'';
+    document.getElementById('us-invested-idr').value=us.investedIDR||'';
+    document.getElementById('us-nav-idr').value=us.currentValueIDR||'';
+    document.getElementById('us-gain-idr').value=us.gainIDR||'';
+    document.getElementById('us-gain-pct').value=us.gainPctIDR||'';
+  } }
+  else if(type==='rd'){ const rd=state.reksadana.find(r=>r.id===id); if(rd){document.getElementById('rd-fname').value=rd.name;document.getElementById('rd-cat').value=rd.category;document.getElementById('rd-invested').value=rd.invested;document.getElementById('rd-curval').value=rd.currentValue; setTimeout(autoCalcRD,50);} }
+  else if(type==='other'){ const oa=state.otherAssets.find(o=>o.id===id); if(oa){document.getElementById('oth-name').value=oa.name;document.getElementById('oth-cur').value=oa.currency;document.getElementById('oth-val').value=oa.value;document.getElementById('oth-icon').value=oa.icon;document.getElementById('oth-notes').value=oa.notes||'';} }
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); clearForms(); }
+function closeModalOnBg(e){ if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+function clearForms(){
+  ['idx-ticker','idx-lots','idx-invested','us-ticker','us-invested-usd','us-shares','rd-fname','rd-invested','rd-curval','oth-name','oth-val','oth-icon','oth-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['idx-preview','us-preview','rd-preview','oth-preview'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+}
+function submitIDX(){
+  const ticker=(document.getElementById('idx-ticker').value||'').toUpperCase().trim();
+  const lots=parseFloat(document.getElementById('idx-lots').value)||0;
+  const invested=parseFloat(document.getElementById('idx-invested').value)||0;
+  if(!ticker||!invested){alert('Please fill Ticker and Total Invested');return;}
+  // Get live price to auto-calc avgBuy if lots provided
+  const existingSt = state.idxStocks.find(s=>s.ticker===ticker);
+  const livePrice = existingSt ? (existingSt.currentPrice||existingSt.fallback) : 0;
+  // Auto-calc lots from live price if not provided
+  const autoLots = lots || (livePrice ? Math.round(invested/(livePrice*100)) : 1);
+  const avgBuy = autoLots ? (invested/(autoLots*100)) : livePrice;
+  const name = existingSt ? existingSt.name : ticker;
+  const fallback = livePrice || avgBuy;
+  if(state.editId){ const idx=state.idxStocks.findIndex(s=>s.ticker===state.editId); if(idx>=0) state.idxStocks[idx]={...state.idxStocks[idx],ticker,name,lots:autoLots,avgBuy,invested,fallback}; }
+  else state.idxStocks.push({ticker,name,lots:autoLots,avgBuy,invested,currentPrice:null,fallback});
+  saveState(); closeModal(); renderAll(); showToast('✅ Stock saved!');
+}
+function submitUS(){
+  const ticker=(document.getElementById('us-ticker').value||'').toUpperCase().trim();
+  const shares=parseFloat(document.getElementById('us-shares').value)||0;
+  const avgCostUSD=parseFloat(document.getElementById('us-avgcost-input').value)||0;
+  const investedIDR=parseFloat(document.getElementById('us-invested-idr').value)||0;
+  const currentValueIDR=parseFloat(document.getElementById('us-nav-idr').value)||0;
+  const gainIDR=parseFloat(document.getElementById('us-gain-idr').value)||undefined;
+  const gainPctIDR=parseFloat(document.getElementById('us-gain-pct').value)||undefined;
+  if(!ticker){alert('Please fill Ticker');return;}
+  const existingUS=state.usStocks.find(s=>s.ticker===ticker);
+  const name=existingUS?existingUS.name:ticker+' ETF/Stock';
+  const newData={
+    ticker, name,
+    shares: shares||existingUS?.shares||0,
+    avgCostUSD: avgCostUSD||existingUS?.avgCostUSD||0,
+    investedIDR: investedIDR||existingUS?.investedIDR||0,
+    currentValueIDR: currentValueIDR||existingUS?.currentValueIDR||0,
+    gainIDR: !isNaN(gainIDR)?gainIDR:existingUS?.gainIDR,
+    gainPctIDR: !isNaN(gainPctIDR)?gainPctIDR:existingUS?.gainPctIDR,
+    currentPriceUSD: existingUS?.currentPriceUSD||null,
+    fallbackPriceUSD: existingUS?.fallbackPriceUSD||avgCostUSD,
+  };
+  if(state.editId){const idx=state.usStocks.findIndex(s=>s.id===state.editId);if(idx>=0)state.usStocks[idx]={...state.usStocks[idx],...newData};}
+  else state.usStocks.push({id:'us'+Date.now(),...newData});
+  saveState();closeModal();renderAll();
+  showToast('✅ US Stock saved!');
+}
+
+function submitRD(){
+  const name=document.getElementById('rd-fname').value.trim();
+  const category=document.getElementById('rd-cat').value;
+  const invested=parseFloat(document.getElementById('rd-invested').value)||0;
+  const currentValue=parseFloat(document.getElementById('rd-curval').value)||invested;
+  if(!name||!invested){alert('Please fill Fund Name and Total Invested');return;}
+  // Auto-calc: units and navBuy estimated from invested (placeholder, user can refine)
+  // We don't force units — just track invested vs current value
+  const units = 0; const navBuy = 0;
+  // Update bibitTotal to reflect new fund
+  if(state.editId){
+    const idx=state.reksadana.findIndex(r=>r.id===state.editId);
+    if(idx>=0) state.reksadana[idx]={...state.reksadana[idx],name,category,units,navBuy,invested,currentValue};
+  } else {
+    state.reksadana.push({id:'rd'+Date.now(),name,category,units,navBuy,invested,currentValue});
+  }
+  // Sync bibitTotal = sum of all reksa dana current values (user must also update Bibit Saham manually)
+  const rdSum = state.reksadana.reduce((s,r)=>s+r.currentValue,0);
+  // Don't auto-override bibitTotal — user controls it via Other tab
+  saveState(); closeModal(); renderAll(); showToast('✅ Fund saved!');
+}
+function submitOther(){
+  const name=document.getElementById('oth-name').value.trim();
+  const currency=document.getElementById('oth-cur').value;
+  const value=parseFloat(document.getElementById('oth-val').value)||0;
+  const icon=document.getElementById('oth-icon').value||'💰';
+  const notes=document.getElementById('oth-notes').value.trim();
+  if(!name||!value){alert('Please fill Name and Value');return;}
+  if(state.editId){ const idx=state.otherAssets.findIndex(o=>o.id===state.editId); if(idx>=0) state.otherAssets[idx]={id:state.editId,name,currency,value,icon,notes}; }
+  else state.otherAssets.push({id:'oa'+Date.now(),name,currency,value,icon,notes});
+  saveState(); closeModal(); renderAll();
+}
+function openEditIDX(t){openModal('idx',t);}
+function openEditUS(id){openModal('us',id);}
+function openEditRD(id){openModal('rd',id);}
+function openEditOther(id){openModal('other',id);}
+function deleteIDX(t){ if(!confirm('Delete '+t+'?')) return; state.idxStocks=state.idxStocks.filter(s=>s.ticker!==t); saveState(); renderAll(); }
+function deleteUS(id){ if(!confirm('Delete?')) return; state.usStocks=state.usStocks.filter(s=>s.id!==id); saveState(); renderAll(); }
+function deleteRD(id){ if(!confirm('Delete?')) return; state.reksadana=state.reksadana.filter(r=>r.id!==id); saveState(); renderAll(); }
+function deleteOther(id){ if(!confirm('Delete?')) return; state.otherAssets=state.otherAssets.filter(o=>o.id!==id); saveState(); renderAll(); }
+
+
+// =============================================
+// SMART ACTION ENGINE
+// =============================================
+// GOALS reads from state.manual so it updates when user changes income/expenses
+function getGoals() {
+  return {
+    target: 1_000_000_000,
+    freedomTarget: 3_000_000_000,
+    freedomMonthly: 25_000_000,
+    totalMonthlyIncome: state.manual.totalMonthlyIncome || 23_730_000,
+    monthlySalary:  6_825_000,   // kept for reference in action text
+    monthlyPayPal:  state.manual.totalMonthlyIncome
+                    ? state.manual.totalMonthlyIncome - 6_825_000
+                    : 16_905_284,
+    monthlyExpense: state.manual.monthlyExpenses || 5_000_000,
+    paypalUSD: state.manual.paypalUSD || 4121.52,
+    riskProfile: 'moderate',
+    paypalPlan: 'split-etf',
+  };
+}
+// Keep GOALS as a getter alias for backward compat
+const GOALS = new Proxy({}, { get: (_, k) => getGoals()[k] });
+
+function generateActions(c) {
+  const actions = [];
+  const usdToIdr = state.usdToIdr || 16400;
+  const totalNW = c.total;
+  const idxInv  = state.idxStocks.reduce((s,st)=>s+st.invested,0);
+  const idxGain = c.idxTotal - idxInv;
+  const idxGainPct = (idxGain/idxInv)*100;
+  const idxPct  = (c.idxTotal/totalNW)*100;
+  const usPct   = (c.usTotal/totalNW)*100;
+  const rdPct   = (c.bibit/totalNW)*100;
+  const kopPct  = (c.kopVal/totalNW)*100;
+  const tanPct  = (c.tanVal/totalNW)*100;
+  const liquidPct = ((c.cashVal+c.ppVal)/totalNW)*100;
+
+  const paypalOA  = state.otherAssets.find(o=>o.name.toLowerCase().includes('paypal'));
+  const paypalUSD = paypalOA ? paypalOA.value : GOALS.paypalUSD;
+  const paypalIDR = paypalUSD * usdToIdr;
+
+  const realMonthlyIncome = GOALS.totalMonthlyIncome;
+  const monthlySurplus    = realMonthlyIncome - GOALS.monthlyExpense;
+  const koperasiVal = c.kopVal;
+  const koperasiPassive = koperasiVal * 0.085;
+  const koperasiMonthly = koperasiPassive/12;
+  const emergencyNeeded = GOALS.monthlyExpense * 6;
+  const emergencyOk = c.cashVal >= emergencyNeeded;
+  const annualGrowth = totalNW * 0.08;
+  const annualTotal  = annualGrowth + monthlySurplus*12;
+  const freedomGap   = GOALS.freedomTarget - totalNW;
+  const yearsToFreedom = freedomGap>0 ? Math.ceil(freedomGap/annualTotal) : 0;
+
+  // ── TARGET ALLOCATIONS (for financial freedom) ──
+  const TARGET = { us:25, rd:22, kop:22, tanah:18, idx:8, liquid:5 };
+
+  // ── 1. PAYPAL IDLE CASH ──
+  // Only show if PayPal > $500 AND US exposure still below target
+  if (paypalUSD > 500) {
+    const qqqAmt  = Math.floor(paypalUSD * 0.60);
+    const schbAmt = Math.floor(paypalUSD * 0.25);
+    const vtiAmt  = Math.floor(paypalUSD * 0.15);
+    const usGap   = TARGET.us - usPct;
+    const detail  = usGap > 2
+      ? `$${paypalUSD.toLocaleString()} sitting idle (0%). US stocks at ${usPct.toFixed(1)}% — target ${TARGET.us}%. Deploy: $${qqqAmt}→QQQ (60%), $${schbAmt}→SCHB (25%), $${vtiAmt}→VTI (15%) to close the gap.`
+      : `$${paypalUSD.toLocaleString()} idle. US target (${TARGET.us}%) almost reached (${usPct.toFixed(1)}%). Consider keeping $${Math.round(paypalUSD*0.3)} as USD emergency buffer, invest rest.`;
+    actions.push({
+      priority: usGap > 5 ? 'high' : 'medium',
+      icon: '💵', title: `Deploy Idle PayPal — $${paypalUSD.toLocaleString()}`,
+      detail, action: 'Stockbit → Buy QQQ + SCHB + VTI',
+      color: usGap > 5 ? '#f0883e' : '#4f8ef7'
+    });
+  }
+
+  // ── 2. EMERGENCY FUND ──
+  if (!emergencyOk) {
+    const gap = emergencyNeeded - c.cashVal;
+    actions.push({
+      priority: 'high', icon: '🛡️',
+      title: 'Emergency Fund Incomplete',
+      detail: `Need ${rpA(emergencyNeeded)} (6× expenses). Have ${rpA(c.cashVal)}. Gap: ${rpA(gap)}. Build this before investing more — it protects your investments from forced selling.`,
+      action: 'Top up Cash / Pasar Uang reksa dana first',
+      color: '#f85149'
+    });
+  }
+
+  // ── 3. MONTHLY INVEST SPLIT ──
+  // Dynamically adjust split based on current vs target allocations
+  if (monthlySurplus > 0) {
+    const usWeight  = Math.max(0, TARGET.us  - usPct)  * 2;
+    const rdWeight  = Math.max(0, TARGET.rd  - rdPct)  * 1.5;
+    const idxWeight = Math.max(0, TARGET.idx - idxPct) * 1;
+    const kopWeight = Math.max(0, TARGET.kop - kopPct) * 1;
+    const totalW    = usWeight + rdWeight + idxWeight + kopWeight || 4;
+    const usM   = Math.round(monthlySurplus * (usWeight/totalW));
+    const rdM   = Math.round(monthlySurplus * (rdWeight/totalW));
+    const idxM  = Math.round(monthlySurplus * (idxWeight/totalW));
+    const kopM  = monthlySurplus - usM - rdM - idxM;
+    const splits = [];
+    if(usM > 0)  splits.push(`${rpA(usM)} → QQQ/SCHD (US ETF)`);
+    if(rdM > 0)  splits.push(`${rpA(rdM)} → Reksa Dana SIP`);
+    if(idxM > 0) splits.push(`${rpA(idxM)} → IDX (diversify)`);
+    if(kopM > 0) splits.push(`${rpA(kopM)} → Koperasi top-up`);
+    actions.push({
+      priority: 'high', icon: '🔄',
+      title: `Invest ${rpA(monthlySurplus)}/Month — Optimized Split`,
+      detail: `Based on your current vs target allocation: ${splits.join(', ')}. This split is auto-adjusted — heavier weight on what's most underweight vs your goal.`,
+      action: 'Set SIP on Bibit + monthly buy on Stockbit on payday',
+      color: '#4f8ef7'
+    });
+  }
+
+  // ── 4. IDX CONCENTRATION ──
+  if (idxPct > TARGET.idx) {
+    const overBy = (idxPct - TARGET.idx).toFixed(1);
+    // Check how many different sectors
+    const uniqueTickers = state.idxStocks.length;
+    const allBanking = state.idxStocks.every(s=>['BBCA','BBRI','BMRI','BBNI','BNGA'].includes(s.ticker));
+    if (allBanking) {
+      const msg = idxGainPct < -15
+        ? `All ${uniqueTickers} positions down avg ${Math.abs(idxGainPct).toFixed(1)}%. Hold — banking fundamentals strong. Average down slowly.`
+        : `${idxPct.toFixed(1)}% in banking only (target ${TARGET.idx}%, ${overBy}% over). Diversify into TLKM, ASII, ICBP.`;
+      actions.push({
+        priority: idxGainPct < -20 ? 'high' : 'medium', icon: '🇮🇩',
+        title: `IDX 100% Banking — ${overBy}% Over Target`,
+        detail: msg,
+        action: idxGainPct < -15 ? 'Hold & average down BBRI or BMRI (cheapest)' : 'Next IDX buy: add TLKM or ASII instead of banking',
+        color: idxGainPct < -15 ? '#f85149' : '#f0883e'
+      });
+    }
+  } else {
+    // IDX is at or below target — good!
+    actions.push({
+      priority: 'low', icon: '🇮🇩', title: `IDX Allocation On Track (${idxPct.toFixed(1)}% / target ${TARGET.idx}%)`,
+      detail: `IDX stocks at ${idxPct.toFixed(1)}% — within target range. No action needed unless you want to diversify sectors.`,
+      action: 'Maintain current IDX positions', color: '#3fb950'
+    });
+  }
+
+  // ── 5. US EXPOSURE ──
+  if (usPct < TARGET.us * 0.7) {
+    // Significantly below target
+    actions.push({
+      priority: 'high', icon: '🇺🇸',
+      title: `US Exposure Too Low — ${usPct.toFixed(1)}% (target ${TARGET.us}%)`,
+      detail: `Only ${usPct.toFixed(1)}% in US markets. For financial freedom, target ${TARGET.us}%. US ETFs hedge IDR depreciation + grow faster long term. Deploy PayPal + monthly surplus here.`,
+      action: `Priority: invest ${rpA(monthlySurplus*0.4)}/month into QQQ/SCHD/VTI`,
+      color: '#f85149'
+    });
+  } else if (usPct < TARGET.us) {
+    // Getting close
+    actions.push({
+      priority: 'medium', icon: '🇺🇸',
+      title: `US Exposure Growing — ${usPct.toFixed(1)}% (${(TARGET.us-usPct).toFixed(1)}% to go)`,
+      detail: `Good progress! ${usPct.toFixed(1)}% in US markets, ${(TARGET.us-usPct).toFixed(1)}% away from ${TARGET.us}% target. Keep monthly buys consistent.`,
+      action: `Continue ${rpA(monthlySurplus*0.35)}/month into US ETFs`,
+      color: '#4f8ef7'
+    });
+  } else {
+    // Target reached!
+    actions.push({
+      priority: 'low', icon: '🇺🇸', title: `✅ US Target Reached! (${usPct.toFixed(1)}% / ${TARGET.us}%)`,
+      detail: `US exposure at target. Focus on maintaining via monthly buys. Consider shifting some surplus to Koperasi or Reksa Dana if they're below target.`,
+      action: 'Maintain with regular monthly buys', color: '#3fb950'
+    });
+  }
+
+  // ── 6. REKSA DANA ──
+  if (rdPct > TARGET.rd + 5) {
+    actions.push({
+      priority: 'low', icon: '📊',
+      title: `Reksa Dana Slightly Heavy — ${rdPct.toFixed(1)}% (target ${TARGET.rd}%)`,
+      detail: `RD at ${rdPct.toFixed(1)}%. No need to sell — just redirect new monthly investments to US ETFs until it naturally rebalances.`,
+      action: 'Redirect next 3 months of Bibit SIP to US ETFs instead', color: '#bc8cff'
+    });
+  } else if (rdPct < TARGET.rd - 5) {
+    actions.push({
+      priority: 'medium', icon: '📊',
+      title: `Reksa Dana Underweight — ${rdPct.toFixed(1)}% (target ${TARGET.rd}%)`,
+      detail: `RD at ${rdPct.toFixed(1)}%, below target. Top up Grow Obligasi or BNP Paribas with monthly surplus.`,
+      action: 'Add to Bibit reksa dana this month', color: '#bc8cff'
+    });
+  }
+
+  // ── 7. KOPERASI ──
+  actions.push({
+    priority: 'low', icon: '🤝',
+    title: `Reinvest Koperasi Returns — ${rpA(koperasiMonthly)}/month`,
+    detail: `${rpA(koperasiPassive)}/year passive. Reinvesting 50% back = ${rpA(koperasiPassive*0.5*5)} extra in 5 years. Other 50% into QQQ for higher growth.`,
+    action: 'Annual dividend → 50% koperasi + 50% Stockbit QQQ', color: '#3fb950'
+  });
+
+  // ── 8. DESIGN BUSINESS ──
+  actions.push({
+    priority: 'medium', icon: '🎨',
+    title: 'Scale Design Business — Fastest Path to Freedom',
+    detail: `PayPal income ~${rpA(realMonthlyIncome - 6825000)}/month is ${((realMonthlyIncome-6825000)/realMonthlyIncome*100).toFixed(0)}% of your income. Every extra Rp 1 jt/month = freedom ~${(12e6/annualTotal).toFixed(1)} years sooner. Focus on recurring clients.`,
+    action: 'Target: grow PayPal income 20% this quarter', color: '#bc8cff'
+  });
+
+  return { actions, freedomPct: Math.min((totalNW/GOALS.freedomTarget)*100,100), yearsToFreedom, koperasiMonthly, monthlySurplus, annualTotal, realMonthlyIncome };
+}
+
+function rpA(n) {
+  const a = Math.abs(n);
+  if(a>=1e9) return 'Rp '+(n/1e9).toFixed(2)+'M';
+  if(a>=1e6) return 'Rp '+(a/1e6).toFixed(1)+' jt';
+  return 'Rp '+Math.round(a).toLocaleString('id-ID');
+}
+
+function renderActions(c) {
+  const { actions, freedomPct, yearsToFreedom, koperasiMonthly, monthlySurplus, annualTotal, realMonthlyIncome } = generateActions(c);
+
+  const priorityColors = { high: '#f85149', medium: '#f0883e', low: '#3fb950' };
+  const priorityLabels = { high: '🔴 High', medium: '🟡 Medium', low: '🟢 Low' };
+
+  // Freedom tracker
+  const freedomHTML = `
+    <div style="background:linear-gradient(135deg,#1a2540,#1e2d4a);border:1px solid rgba(79,142,247,0.25);border-radius:14px;padding:16px;margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Financial Freedom Goal</div>
+          <div style="font-size:22px;font-weight:800;letter-spacing:-1px;color:var(--blue);">${freedomPct.toFixed(1)}% there</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">Target: Rp 3 Miliar → ~Rp 25 jt/month passive</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:28px;">🏝️</div>
+          <div style="font-size:12px;color:var(--blue);font-weight:700;margin-top:2px;">~${yearsToFreedom} years</div>
+          <div style="font-size:10px;color:var(--muted);">at current pace</div>
+        </div>
+      </div>
+      <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;margin-bottom:8px;">
+        <div style="height:100%;width:${freedomPct}%;background:linear-gradient(90deg,#4f8ef7,#3dd9eb);border-radius:99px;transition:width 1.2s ease;"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;">
+        <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Total Income/mo</div>
+          <div style="font-size:13px;font-weight:700;color:var(--green);">${rpA(realMonthlyIncome)}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Passive/Month</div>
+          <div style="font-size:13px;font-weight:700;color:var(--purple);">${rpA(koperasiMonthly)}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Annual Growth</div>
+          <div style="font-size:13px;font-weight:700;color:var(--blue);">${rpA(annualTotal)}</div>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('freedom-tracker').innerHTML = freedomHTML;
+
+  // Action items
+  const actionsHTML = actions.map((a, i) => `
+    <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid ${a.color};border-radius:14px;padding:14px 16px;margin-bottom:10px;animation:fadeUp 0.3s ${i*0.05}s ease both;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="font-size:20px;">${a.icon}</span>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;letter-spacing:-0.2px;">${a.title}</div>
+          <div style="font-size:10px;font-weight:700;color:${priorityColors[a.priority]};text-transform:uppercase;letter-spacing:0.8px;margin-top:1px;">${priorityLabels[a.priority]} Priority</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:8px;">${a.detail}</div>
+      <div style="font-size:12px;color:${a.color};font-weight:600;padding:6px 10px;background:${a.color}15;border-radius:7px;display:inline-block;">→ ${a.action}</div>
+    </div>`
+  ).join('');
+
+  document.getElementById('action-items-container').innerHTML =
+    `<div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 12px;">
+      <span style="font-size:16px;font-weight:700;">Smart Action Plan</span>
+      <span style="font-size:11px;color:var(--muted);background:var(--bg3);padding:3px 8px;border-radius:6px;">Auto-updates with portfolio</span>
+    </div>` + actionsHTML;
+}
+
+
+// =============================================
+// REPOSITION ENGINE
+// =============================================
+function renderReposition() {
+  const c = calc();
+  const usdToIdr = state.usdToIdr || 16400;
+  const total = c.total;
+  const totalNW = total;
+  // Pct allocations
+  const usPct      = (c.usTotal/total)*100;
+  const idxPct     = (c.idxTotal/total)*100;
+  const rdPct      = (c.bibit/total)*100;
+  const kopPct     = (c.kopVal/total)*100;
+  const bankingPct = idxPct;
+  const liquidPct  = ((c.cashVal+c.ppVal)/total)*100;
+  // Income
+  const realMonthlyIncome = GOALS.totalMonthlyIncome || 23730000;
+  const monthlySurplus    = realMonthlyIncome - (GOALS.monthlyExpense||5000000);
+  // Koperasi
+  const koperasiPassive = c.kopVal * 0.085;
+  // Emergency
+  const emergencyFund = (GOALS.monthlyExpense||5000000) * 6;
+  const cashVal = c.cashVal;
+  // PayPal (defined again below in recs - use c values here)
+  const paypalUSD = state.otherAssets.find(o=>o.name.toLowerCase().includes('paypal'))?.value || (state.manual.paypalUSD||0);
+  const paypalIDR = paypalUSD * usdToIdr;
+
+  // ── LIVE POSITION DATA ──
+  const positions = state.idxStocks.map(st => {
+    const price = st.currentPrice || st.fallback;
+    const val = price * st.lots * 100;
+    const gain = val - st.invested;
+    const gainPct = (gain / st.invested) * 100;
+    return { ...st, val, gain, gainPct, type: 'IDX' };
+  });
+
+  const usPositions = state.usStocks.map(us => {
+    const price = us.currentPriceUSD || us.avgCostUSD;
+    const usdVal = us.shares * price;
+    const cost = us.shares * us.avgCostUSD;
+    const gain = usdVal - cost;
+    const gainPct = (gain / cost) * 100;
+    const idrVal = usdVal * usdToIdr;
+    return { ...us, usdVal, idrVal, gain, gainPct, type: 'US' };
+  });
+
+  // Variables already defined in header above
+  const koperasiVal = c.kopVal;
+
+  const bankingTotal = positions.reduce((s, p) => s + p.val, 0);
+  const bankingInv   = positions.reduce((s, p) => s + p.invested, 0);
+  const bankingGain  = bankingTotal - bankingInv;
+  // bankingPct, usPct, liquidPct already defined in header
+  // emergencyFund already in header
+
+  // ── BUILD RECOMMENDATIONS ──
+  const recs = [];
+  const TARGET = { us:25, rd:22, kop:22, tanah:18, idx:8, liquid:5 };
+
+  // ── 1. PAYPAL DEPLOYMENT ──
+  // Only show if PayPal > $500 AND it helps reach a target
+  if (paypalUSD > 500) {
+    const usGap = TARGET.us - usPct;
+    if (usGap > 2) {
+      // US is still below target — deploy to US
+      const qqqA = Math.round(paypalUSD * 0.60);
+      const schbA= Math.round(paypalUSD * 0.25);
+      const vtiA = Math.round(paypalUSD * 0.15);
+      recs.push({
+        id:'paypal', type:'BUY', urgency:'urgent',
+        asset:'QQQ + SCHB + VTI',
+        title:`Deploy Idle PayPal $${paypalUSD.toLocaleString()} → Close US Gap`,
+        reason:`US at ${usPct.toFixed(1)}%, target ${TARGET.us}%. Deploying PayPal is the fastest way to close this ${usGap.toFixed(1)}% gap. Expected return at 12% avg: +${rpA(paypalIDR*0.12)}/year.`,
+        steps:[
+          {action:'BUY',ticker:'QQQ', amount:'$'+qqqA, detail:'Nasdaq100 — growth engine (60%)'},
+          {action:'BUY',ticker:'SCHB',amount:'$'+schbA,detail:'Broad US market — diversify (25%)'},
+          {action:'BUY',ticker:'VTI', amount:'$'+vtiA, detail:'Total market — max spread (15%)'},
+        ],
+        impact:`+${rpA(paypalIDR*0.12)}/yr · US → ${(usPct+(paypalIDR/totalNW)*100).toFixed(1)}%`,
+        impactColor:'#3fb950', where:'Stockbit → Buy', priority:1
+      });
+    } else if (usPct >= TARGET.us) {
+      // US target already met — suggest keeping as buffer or koperasi
+      recs.push({
+        id:'paypal', type:'CONSIDER', urgency:'consider',
+        asset:'PayPal Buffer',
+        title:`US Target Met ✅ — Keep $${Math.round(paypalUSD*0.3)} as USD Buffer`,
+        reason:`US exposure at ${usPct.toFixed(1)}% (target ${TARGET.us}%) — already achieved! Keep part as USD emergency buffer, invest the rest based on next biggest gap.`,
+        steps:[
+          {action:'KEEP',  ticker:'USD Buffer', amount:'$'+Math.round(paypalUSD*0.3), detail:'USD emergency fund — protects against IDR crash'},
+          {action:'BUY',   ticker:'SCHD',       amount:'$'+Math.round(paypalUSD*0.7), detail:'Dividend ETF — add passive income stream'},
+        ],
+        impact:`+${rpA(paypalUSD*0.7*usdToIdr*0.035)}/yr dividend income`,
+        impactColor:'#3fb950', where:'Stockbit → Buy SCHD', priority:2
+      });
+    }
+  }
+
+  // ── 2. IDX STOCKS — smart avg down / sell / diversify ──
+  positions.forEach(st => {
+    const owned = !!st.val;
+    if (st.gainPct < -20) {
+      // Deep loss — avg down if banking fundamentals still strong
+      const avgDownAmt = Math.round(st.invested * 0.10);
+      const newLots = st.lots + Math.round(avgDownAmt/((st.currentPrice||st.fallback)*100));
+      const newAvgBuy = ((st.invested + avgDownAmt) / (newLots * 100));
+      recs.push({
+        id:'avgdown_'+st.ticker, type:'AVERAGE DOWN', urgency:'consider',
+        asset: st.ticker,
+        title:`${st.ticker} Down ${Math.abs(st.gainPct).toFixed(1)}% — Avg Down?`,
+        reason:`${st.ticker} at Rp ${(st.currentPrice||st.fallback).toLocaleString('id-ID')} vs avg buy Rp ${st.avgBuy.toLocaleString('id-ID')}. Indonesian banking ROE still 15-20% — fundamentally sound. Averaging down lowers breakeven.`,
+        steps:[
+          {action:'BUY',   ticker:st.ticker, amount:rpA(avgDownAmt), detail:`+${newLots-st.lots} lots → new avg buy ≈ Rp ${Math.round(newAvgBuy).toLocaleString('id-ID')}`},
+          {action:'WAIT',  ticker:st.ticker, amount:'—',             detail:'Or wait — do NOT sell at loss unless emergency'},
+        ],
+        impact:`Breakeven drops from Rp ${st.avgBuy.toLocaleString('id-ID')} → Rp ${Math.round(newAvgBuy).toLocaleString('id-ID')}`,
+        impactColor:'#f0883e', where:'Bibit Saham → Beli', priority:3
+      });
+    } else if (st.gainPct > 15) {
+      // Profit — take 30% off table, redeploy to US
+      const sellLots = Math.max(1, Math.floor(st.lots * 0.3));
+      const sellVal  = (st.currentPrice||st.fallback) * sellLots * 100;
+      recs.push({
+        id:'profit_'+st.ticker, type:'SELL PARTIAL', urgency:'optional',
+        asset: st.ticker,
+        title:`${st.ticker} Up ${st.gainPct.toFixed(1)}% — Take 30% Profit`,
+        reason:`Lock in gains by selling ${sellLots} lots (30%). Redeploy into US ETFs for better long-term growth and reduced sector concentration.`,
+        steps:[
+          {action:'SELL', ticker:st.ticker, amount:`${sellLots} lots ≈ ${rpA(sellVal)}`, detail:'Sell 30% — lock profit'},
+          {action:'BUY',  ticker:'QQQ',     amount:rpA(sellVal),                         detail:'Redeploy to global growth ETF'},
+        ],
+        impact:`Reduces banking concentration by ${((sellVal/totalNW)*100).toFixed(1)}% + moves ${rpA(sellVal)} to higher-growth`,
+        impactColor:'#3fb950', where:'Bibit Saham → Jual, then Stockbit → Buy QQQ', priority:4
+      });
+    }
+  });
+
+  // ── 3. US STOCKS — only show if below target ──
+  if (usPct < TARGET.us) {
+    const monthlyUS = Math.round(monthlySurplus * 0.4);
+    recs.push({
+      id:'us_grow', type:'BUY', urgency: usPct < TARGET.us*0.5 ? 'urgent' : 'consider',
+      asset:'QQQ / SCHD / VTI',
+      title:`Grow US to ${TARGET.us}% — Currently ${usPct.toFixed(1)}%`,
+      reason:`US ETFs are your most powerful freedom tool — hedges IDR depreciation + 10-15% avg annual growth. Need ${rpA((TARGET.us-usPct)/100*totalNW)} more to hit target.`,
+      steps:[
+        {action:'BUY', ticker:'QQQ',  amount:rpA(monthlyUS*0.5), detail:'Growth engine — monthly auto-buy'},
+        {action:'BUY', ticker:'SCHD', amount:rpA(monthlyUS*0.3), detail:'Dividend — builds passive income'},
+        {action:'BUY', ticker:'VTI',  amount:rpA(monthlyUS*0.2), detail:'Broad market — diversification'},
+      ],
+      impact:`At ${rpA(monthlyUS)}/month → target reached in ~${Math.ceil(((TARGET.us-usPct)/100*totalNW)/(monthlyUS*12))} year(s)`,
+      impactColor:'#3dd9eb', where:'Stockbit → monthly auto-invest', priority: usPct<TARGET.us*0.5?2:3
+    });
+  } else {
+    // US target met — celebrate and suggest maintaining
+    recs.push({
+      id:'us_maintain', type:'MAINTAIN', urgency:'low',
+      asset:'US ETFs ✅',
+      title:`✅ US Target Achieved! (${usPct.toFixed(1)}% / ${TARGET.us}%)`,
+      reason:`Excellent! US exposure at target. Now focus on building passive income via SCHD dividends and rebalancing other underweight assets.`,
+      steps:[
+        {action:'HOLD',  ticker:'QQQ/VTI',  amount:'—', detail:'Keep current positions growing'},
+        {action:'SHIFT', ticker:'SCHD',      amount:rpA(Math.round(monthlySurplus*0.2)), detail:'Add dividend ETF for passive income stream'},
+      ],
+      impact:`SCHD at 3.5% yield → +${rpA(Math.round(c.usTotal*0.035))}/yr dividend`,
+      impactColor:'#3fb950', where:'Stockbit → Buy SCHD monthly', priority:5
+    });
+  }
+
+  // ── 4. EXCESS CASH — only if above emergency + has somewhere better ──
+  const excessCash = Math.max(0, cashVal - emergencyFund);
+  if (excessCash > 5000000) {
+    recs.push({
+      id:'cash', type:'REDEPLOY', urgency:'consider',
+      asset:'Excess Cash',
+      title:`${rpA(excessCash)} Sitting Idle Above Emergency Fund`,
+      reason:`Emergency fund (${rpA(emergencyFund)}) covered ✅. The extra ${rpA(excessCash)} earns nothing. Even Pasar Uang reksa dana earns 4-5%/yr.`,
+      steps:[
+        {action:'KEEP', ticker:'Cash',         amount:rpA(emergencyFund),       detail:'Keep as emergency fund — do not touch'},
+        {action:'MOVE', ticker:'Pasar Uang RD',amount:rpA(excessCash*0.5),      detail:'TRIM Kas / Manulife Kas — 4-5%, instant liquid'},
+        {action:'BUY',  ticker:'QQQ',          amount:rpA(excessCash*0.5),      detail:'Higher growth if you can leave it 3+ years'},
+      ],
+      impact:`+${rpA(excessCash*0.045)}/yr minimum vs 0% now`,
+      impactColor:'#4f8ef7', where:'Bibit (Pasar Uang) + Stockbit', priority:4
+    });
+  }
+
+  // ── 5. REKSA DANA — only if meaningfully off target ──
+  if (rdPct < TARGET.rd - 5) {
+    recs.push({
+      id:'rd_grow', type:'BUY', urgency:'low',
+      asset:'Reksa Dana',
+      title:`Reksa Dana Underweight — ${rdPct.toFixed(1)}% (target ${TARGET.rd}%)`,
+      reason:`RD at ${rdPct.toFixed(1)}%, needs ${rpA((TARGET.rd-rdPct)/100*totalNW)} more. Focus on Obligasi funds for stable returns + less volatility than Saham funds.`,
+      steps:[
+        {action:'BUY', ticker:'Grow Obligasi',     amount:rpA(Math.round(monthlySurplus*0.15)), detail:'9.4% gain — good momentum'},
+        {action:'BUY', ticker:'Manulife Obligasi', amount:rpA(Math.round(monthlySurplus*0.1)),  detail:'Stable bond fund — low risk'},
+      ],
+      impact:`Closes ${(TARGET.rd-rdPct).toFixed(1)}% gap in ~${Math.ceil(((TARGET.rd-rdPct)/100*totalNW)/(monthlySurplus*0.25*12))} year(s)`,
+      impactColor:'#bc8cff', where:'Bibit → F The Money → Top Up', priority:5
+    });
+  } else if (rdPct > TARGET.rd + 5) {
+    recs.push({
+      id:'rd_rebalance', type:'REBALANCE', urgency:'low',
+      asset:'Reksa Dana',
+      title:`Reksa Dana Slightly Heavy — ${rdPct.toFixed(1)}% (target ${TARGET.rd}%)`,
+      reason:`No need to sell. Just redirect new monthly investments away from RD toward US ETFs until allocation naturally rebalances.`,
+      steps:[
+        {action:'HOLD',     ticker:'Existing RD', amount:'—',  detail:'Keep — let it compound'},
+        {action:'REDIRECT', ticker:'New money',   amount:'—',  detail:'Next 6 months: skip RD top-up, add to QQQ instead'},
+      ],
+      impact:`Gradual rebalance without selling — no tax event`,
+      impactColor:'#bc8cff', where:'Skip Bibit SIP for 3-6 months', priority:6
+    });
+  }
+
+  // ── 6. KOPERASI ──
+  if (kopPct < TARGET.kop - 5) {
+    recs.push({
+      id:'koperasi_grow', type:'BUY', urgency:'low',
+      asset:'Koperasi',
+      title:`Koperasi Below Target — ${kopPct.toFixed(1)}% (target ${TARGET.kop}%)`,
+      reason:`Koperasi at ${kopPct.toFixed(1)}%. Safe 7-10%/yr return — good anchor for portfolio stability. Top up to increase passive income.`,
+      steps:[
+        {action:'ADD', ticker:'Koperasi', amount:rpA(Math.round(monthlySurplus*0.15)), detail:'Monthly top-up — compound the passive income'},
+      ],
+      impact:`+${rpA(Math.round(monthlySurplus*0.15)*12*0.085)}/yr extra passive if topped up`,
+      impactColor:'#4f8ef7', where:'Koperasi direct', priority:6
+    });
+  }
+
+  // ── 7. REINVEST KOPERASI RETURNS ──
+  recs.push({
+    id:'koperasi_reinvest', type:'REINVEST', urgency:'low',
+    asset:'Koperasi Returns',
+    title:`Reinvest ${rpA(Math.round(koperasiPassive))}/yr Koperasi Returns`,
+    reason:`Don't let annual koperasi dividend sit idle. Split: 50% back to koperasi (compound), 50% into SCHD (build USD dividend stream).`,
+    steps:[
+      {action:'REINVEST', ticker:'Koperasi', amount:rpA(Math.round(koperasiPassive*0.5)), detail:'Compound at 7-10%/yr'},
+      {action:'BUY',      ticker:'SCHD',     amount:rpA(Math.round(koperasiPassive*0.5)), detail:'USD dividend ETF — 3.5%/yr + growth'},
+    ],
+    impact:`Compound effect: +${rpA(Math.round(koperasiPassive*5*1.085))} over 5 years`,
+    impactColor:'#3fb950', where:'Annual dividend → Koperasi + Stockbit', priority:7
+  });
+
+  // ── RENDER ──
+  const urgencyConfig = {
+    urgent:   { label: '🔴 URGENT',   color: '#f85149', bg: 'rgba(248,81,73,0.08)',   border: 'rgba(248,81,73,0.25)' },
+    consider: { label: '🟡 CONSIDER', color: '#f0883e', bg: 'rgba(240,136,62,0.08)', border: 'rgba(240,136,62,0.25)' },
+    optional: { label: '🟢 OPTIONAL', color: '#3fb950', bg: 'rgba(63,185,80,0.08)',  border: 'rgba(63,185,80,0.25)' },
+    low:      { label: '⚪ LOW',       color: '#7d8590', bg: 'rgba(125,133,144,0.06)', border: 'rgba(125,133,144,0.2)' },
+  };
+  const typeColors = {
+    'BUY': '#3fb950', 'SELL PARTIAL': '#f85149', 'AVERAGE DOWN': '#f0883e',
+    'REDEPLOY': '#4f8ef7', 'REBALANCE': '#bc8cff', 'REINVEST': '#3dd9eb',
+  };
+
+  // Summary header
+  const totalIdleCapital = paypalIDR + Math.max(0, cashVal - emergencyFund);
+  const potentialReturn = totalIdleCapital * 0.12;
+
+  let html = `
+    <div style="background:linear-gradient(135deg,#1a2540,#22303f);border:1px solid rgba(79,142,247,0.2);border-radius:14px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Reposition Summary</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Idle Capital</div>
+          <div style="font-size:16px;font-weight:800;color:#f0883e;">${rpA(totalIdleCapital)}</div>
+          <div style="font-size:10px;color:var(--muted);">PayPal + excess cash</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Potential +Return</div>
+          <div style="font-size:16px;font-weight:800;color:#3fb950;">+${rpA(potentialReturn)}/yr</div>
+          <div style="font-size:10px;color:var(--muted);">if deployed at 12% avg</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+        <div style="text-align:center;padding:8px;background:rgba(255,255,255,0.04);border-radius:8px;">
+          <div style="font-size:18px;">🇺🇸</div>
+          <div style="font-size:11px;font-weight:700;color:${usPct<10?'#f85149':'#3fb950'}">${usPct.toFixed(1)}%</div>
+          <div style="font-size:9px;color:var(--muted)">US (target 25%)</div>
+        </div>
+        <div style="text-align:center;padding:8px;background:rgba(255,255,255,0.04);border-radius:8px;">
+          <div style="font-size:18px;">🇮🇩</div>
+          <div style="font-size:11px;font-weight:700;color:${bankingPct>8?'#f0883e':'#3fb950'}">${bankingPct.toFixed(1)}%</div>
+          <div style="font-size:9px;color:var(--muted)">IDX (target 10%)</div>
+        </div>
+        <div style="text-align:center;padding:8px;background:rgba(255,255,255,0.04);border-radius:8px;">
+          <div style="font-size:18px;">💵</div>
+          <div style="font-size:11px;font-weight:700;color:${liquidPct>15?'#f0883e':'#3fb950'}">${liquidPct.toFixed(1)}%</div>
+          <div style="font-size:9px;color:var(--muted)">Liquid (target 8%)</div>
+        </div>
+      </div>
+    </div>`;
+
+  // Sort by priority
+  const sorted = recs.sort((a,b) => a.priority - b.priority);
+
+  sorted.forEach((rec, i) => {
+    const u = urgencyConfig[rec.urgency];
+    const typeColor = typeColors[rec.type] || '#7d8590';
+    html += `
+      <div style="background:var(--card);border:1px solid ${u.border};border-radius:14px;overflow:hidden;margin-bottom:12px;animation:fadeUp 0.3s ${i*0.06}s ease both;">
+        <!-- Header -->
+        <div style="background:${u.bg};padding:12px 16px;border-bottom:1px solid ${u.border};display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11px;font-weight:700;color:${u.color};text-transform:uppercase;letter-spacing:0.8px;">${u.label}</span>
+            <span style="font-size:11px;font-weight:700;color:${typeColor};background:${typeColor}20;padding:2px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:0.5px;">${rec.type}</span>
+          </div>
+          <span style="font-size:18px;font-weight:800;color:${typeColor};background:${typeColor}15;padding:2px 10px;border-radius:8px;">${rec.asset}</span>
+        </div>
+        <!-- Body -->
+        <div style="padding:14px 16px;">
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px;letter-spacing:-0.3px;">${rec.title}</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:12px;">${rec.reason}</div>
+          <!-- Steps -->
+          <div style="margin-bottom:12px;">
+            ${rec.steps.map((step, si) => `
+              <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+                <div style="min-width:28px;height:28px;border-radius:8px;background:${typeColors[step.action]||'var(--bg3)'}20;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                  <span style="font-size:10px;font-weight:800;color:${typeColors[step.action]||'var(--muted)'};">${step.action.substring(0,4)}</span>
+                </div>
+                <div style="flex:1;">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                    <span style="font-size:13px;font-weight:700;color:${typeColors[step.action]||'var(--text)'};">${step.ticker}</span>
+                    <span style="font-size:13px;font-weight:700;color:var(--text);">${step.amount}</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:1px;">${step.detail}</div>
+                </div>
+              </div>`).join('')}
+          </div>
+          <!-- Impact -->
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="flex:1;background:${rec.impactColor}12;border:1px solid ${rec.impactColor}30;border-radius:8px;padding:8px 12px;">
+              <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Expected Impact</div>
+              <div style="font-size:13px;font-weight:700;color:${rec.impactColor};">${rec.impact}</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--muted);">📍 Where: <span style="color:var(--text);font-weight:600;">${rec.where}</span></div>
+        </div>
+      </div>`;
+  });
+
+  // Target portfolio visual
+  html += `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px;">🎯 Target Portfolio (After Reposition)</div>
+      ${[
+        {label:'US ETFs (QQQ+SCHB+VTI)', current: usPct, target: 27, color:'#3dd9eb'},
+        {label:'Reksa Dana', current: (c.bibit/total)*100, target: 22, color:'#bc8cff'},
+        {label:'Fixed Income (Koperasi)', current: (c.kopVal/total)*100, target: 22, color:'#4f8ef7'},
+        {label:'Property (Tanah)', current: (c.tanVal)/total*100, target: 18, color:'#f0883e'},
+        {label:'IDX Stocks (diversified)', current: bankingPct, target: 8, color:'#f85149'},
+        {label:'Cash (emergency only)', current: liquidPct, target: 3, color:'#3fb950'},
+      ].map(item => `
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:12px;color:var(--muted)">${item.label}</span>
+            <span style="font-size:12px;font-weight:600;">
+              <span style="color:${Math.abs(item.current-item.target)<3?'#3fb950':item.current>item.target?'#f0883e':'#4f8ef7'}">${item.current.toFixed(1)}%</span>
+              <span style="color:var(--muted2)"> → </span>
+              <span style="color:var(--text)">${item.target}%</span>
+            </span>
+          </div>
+          <div style="display:flex;gap:2px;height:6px;">
+            <div style="width:${item.current}%;background:${item.color};border-radius:3px;transition:width 1s ease;opacity:0.5;"></div>
+            <div style="width:${Math.max(0,item.target-item.current)}%;background:${item.color};border-radius:3px;transition:width 1s ease;opacity:0.15;border:1px dashed ${item.color};"></div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  document.getElementById('reposition-content').innerHTML = html;
+}
+
+
+// =============================================
+// REPOSITION SUB-TAB SWITCHER
+// =============================================
+function switchRTab(tab) {
+  ['rebalance','discover','fundamentals'].forEach(t => {
+    document.getElementById('rtab-'+t).classList.toggle('active', t===tab);
+  });
+  document.getElementById('reposition-content').style.display  = tab==='rebalance'    ? 'block' : 'none';
+  document.getElementById('discover-content').style.display    = tab==='discover'     ? 'block' : 'none';
+  document.getElementById('fundamentals-content').style.display= tab==='fundamentals' ? 'block' : 'none';
+  if(tab==='discover' && !window._discoverLoaded) renderDiscover();
+  if(tab==='fundamentals' && !window._fundamentalsLoaded) renderFundamentals();
+}
+
+// =============================================
+// DISCOVER — NEW INVESTMENT IDEAS
+// =============================================
+
+// Curated investment universe for financial freedom
+// Updated manually but enriched with live price fetching
+const INVESTMENT_UNIVERSE = {
+  idxStocks: [
+    { ticker:'BBNI',  name:'Bank Negara Indonesia', sector:'Banking',     why:'Cheaper valuation than BBCA/BBRI, state-owned, dividend ~5%',         risk:'medium', type:'Dividend+Growth', minLots:1  },
+    { ticker:'TLKM',  name:'Telkom Indonesia',      sector:'Telecom',     why:'Monopoly-like telecom, stable dividend ~5%, defensive sector',         risk:'low',    type:'Dividend',        minLots:1  },
+    { ticker:'ASII',  name:'Astra International',   sector:'Conglomerate',why:'Most diversified IDX stock, auto+agri+finance, Warren Buffett style',   risk:'medium', type:'Dividend+Growth', minLots:1  },
+    { ticker:'GOTO',  name:'GoTo Group',             sector:'Tech',        why:'Indonesia largest tech ecosystem, high risk high reward',               risk:'high',   type:'Growth',          minLots:10 },
+    { ticker:'BREN',  name:'Barito Renewables',      sector:'Energy',      why:'Clean energy play, ESG, long-term Indonesia green transition',          risk:'high',   type:'Growth',          minLots:1  },
+    { ticker:'ICBP',  name:'Indofood CBP',           sector:'Consumer',    why:'Indomie maker, recession-proof consumer staples, consistent dividend',  risk:'low',    type:'Dividend',        minLots:1  },
+    { ticker:'UNVR',  name:'Unilever Indonesia',     sector:'Consumer',    why:'Defensive consumer staples, very high dividend yield historically',     risk:'low',    type:'Dividend',        minLots:1  },
+    { ticker:'EXCL',  name:'XL Axiata',              sector:'Telecom',     why:'2nd largest telecom, merging with Smartfren, growth catalyst',          risk:'medium', type:'Growth',          minLots:1  },
+  ],
+  usETFs: [
+    { ticker:'SCHB',  name:'Schwab US Broad Market', sector:'US Total',    why:'Lowest expense ratio ETF (0.03%), owns 2500+ US stocks, set and forget', risk:'medium', type:'Growth',   minUSD:10  },
+    { ticker:'VTI',   name:'Vanguard Total Market',  sector:'US Total',    why:'Vanguard version of total US market, 4000+ stocks, ultra diversified',   risk:'medium', type:'Growth',   minUSD:10  },
+    { ticker:'VOO',   name:'Vanguard S&P500',         sector:'US Large',   why:'Track S&P500, 500 best US companies, 10%+ avg annual return since 1957', risk:'medium', type:'Growth',   minUSD:10  },
+    { ticker:'VYM',   name:'Vanguard High Dividend',  sector:'Dividend',   why:'High dividend ETF, 3-4% yield, perfect for passive income goal',         risk:'low',    type:'Dividend', minUSD:10  },
+    { ticker:'SCHD',  name:'Schwab Dividend ETF',     sector:'Dividend',   why:'Best dividend growth ETF, 3.5% yield + grows every year, FIRE favourite', risk:'low',   type:'Dividend', minUSD:10  },
+    { ticker:'VWO',   name:'Vanguard Emerging Markets',sector:'EM',        why:'Indonesia+China+India+Brazil exposure, hedge against USD concentration', risk:'high',   type:'Growth',   minUSD:10  },
+    { ticker:'ARKK',  name:'ARK Innovation ETF',      sector:'Disruptive', why:'High risk/reward, Tesla+AI+genomics, for small speculative allocation',  risk:'high',   type:'Growth',   minUSD:10  },
+    { ticker:'GLD',   name:'SPDR Gold Shares',        sector:'Gold',       why:'Hedge against IDR depreciation + inflation, non-correlated to stocks',   risk:'low',    type:'Hedge',    minUSD:10  },
+  ],
+  reksadana: [
+    { name:'Schroder Dana Prestasi Plus', category:'Saham',     why:'Best performing IDX equity fund last 5 years, Schroder reputation',     risk:'high',   type:'Growth',   minRp:10000  },
+    { name:'Manulife Saham Andalan',       category:'Saham',     why:'Top quartile IDX equity reksa dana, consistent manager',               risk:'high',   type:'Growth',   minRp:10000  },
+    { name:'Batavia Dana Saham Optimal',   category:'Saham',     why:'Diversified IDX stocks, strong risk-adjusted returns',                  risk:'high',   type:'Growth',   minRp:10000  },
+    { name:'Trimegah Dana Tetap Syariah',  category:'Obligasi',  why:'Syariah fixed income, stable +7-9%/yr, good for stable allocation',    risk:'low',    type:'Stable',   minRp:10000  },
+    { name:'Sucorinvest Sharia Money Mkt', category:'Pasar Uang',why:'Best Syariah money market, 4-5%/yr, near-instant liquidity',           risk:'low',    type:'Liquid',   minRp:10000  },
+    { name:'Eastspring IDX ESG Leaders',   category:'Saham',     why:'ESG-focused IDX fund, future-proof companies, growing AUM',            risk:'medium', type:'Growth',   minRp:10000  },
+  ],
+};
+
+const riskColors = { low:'#3fb950', medium:'#f0883e', high:'#f85149' };
+const typeColors2 = { Growth:'#4f8ef7', Dividend:'#3fb950', 'Dividend+Growth':'#3dd9eb', Stable:'#bc8cff', Liquid:'#e3b341', Hedge:'#f0883e' };
+
+async function renderDiscover() {
+  window._discoverLoaded = true;
+  const c = calc();
+  const usdToIdr = state.usdToIdr || 16400;
+  const monthlyBudget = 4000000; // Under Rp 5 juta/month
+  const goal = 'financial-freedom';
+
+  const el = document.getElementById('discover-content');
+
+  // Show loading
+  el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--muted);">
+    <div style="font-size:32px;margin-bottom:12px;">🔍</div>
+    <div style="font-size:14px;font-weight:600;">Fetching live prices...</div>
+    <div style="font-size:12px;margin-top:6px;">Analyzing investment universe</div>
+  </div>`;
+
+  // Fetch live prices for top US ETFs
+  const livePrices = {};
+  const fetchList = ['SCHB','VTI','VOO','VYM','SCHD','QQQ','GLD'];
+  await Promise.allSettled(fetchList.map(async ticker => {
+    try {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+      const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, {signal:AbortSignal.timeout(6000)});
+      const j = await r.json();
+      const d = JSON.parse(j.contents);
+      const p = d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+      const prev = d?.chart?.result?.[0]?.meta?.chartPreviousClose;
+      if(p) livePrices[ticker] = { price: p, prev, change: prev ? ((p-prev)/prev)*100 : 0 };
+    } catch(e) {}
+  }));
+
+  // Fetch IDX prices
+  const idxFetchList = ['TLKM','ASII','ICBP','BBNI','UNVR'];
+  await Promise.allSettled(idxFetchList.map(async ticker => {
+    try {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}.JK?interval=1d&range=1d`;
+      const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, {signal:AbortSignal.timeout(6000)});
+      const j = await r.json();
+      const d = JSON.parse(j.contents);
+      const p = d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+      const prev = d?.chart?.result?.[0]?.meta?.chartPreviousClose;
+      if(p) livePrices[ticker] = { price: p, prev, change: prev ? ((p-prev)/prev)*100 : 0 };
+    } catch(e) {}
+  }));
+
+  // Build freedom score for each asset
+  // Score = weighted: growth potential (40%) + dividend (30%) + risk-match (20%) + liquidity (10%)
+  // Dynamic freedom score based on YOUR current portfolio gaps
+  const c2 = calc();
+  const usPctNow  = (c2.usTotal / c2.total) * 100;
+  const rdPctNow  = (c2.bibit   / c2.total) * 100;
+  const idxPctNow = (c2.idxTotal/ c2.total) * 100;
+  const US_GAP  = Math.max(0, 25 - usPctNow);   // how much US is needed
+  const RD_GAP  = Math.max(0, 22 - rdPctNow);   // how much RD is needed
+  const IDX_GAP = Math.max(0,  8 - idxPctNow);  // how much IDX is needed
+
+  function freedomScore(asset, type) {
+    let score = 0;
+    // Base growth score
+    if(asset.type?.includes('Growth'))         score += 35;
+    else if(asset.type?.includes('Dividend+Growth')) score += 32;
+    else if(asset.type?.includes('Dividend'))  score += 25;
+    else if(asset.type?.includes('Stable'))    score += 18;
+    else score += 12;
+
+    // Passive income score (key for financial freedom)
+    if(asset.type?.includes('Dividend')) score += 28;
+    else if(asset.type?.includes('Growth')) score += 14;
+    else score += 8;
+
+    // Portfolio gap bonus — higher score if this fills YOUR biggest gap
+    if(type === 'us'  && US_GAP  > 5)  score += Math.min(20, US_GAP);
+    if(type === 'idx' && IDX_GAP > 2)  score += Math.min(12, IDX_GAP*2);
+    if(type === 'rd'  && RD_GAP  > 5)  score += Math.min(12, RD_GAP);
+
+    // Risk match (moderate profile)
+    if(asset.risk==='medium') score += 8;
+    else if(asset.risk==='low') score += 6;
+    else score += 3;
+
+    // Liquidity bonus
+    if(type==='us'||type==='idx') score += 6;
+    else score += 3;
+
+    return Math.min(Math.round(score), 99);
+  }
+
+  // Already own these
+  const ownedIDX = new Set(state.idxStocks.map(s=>s.ticker));
+  const ownedUS = new Set(state.usStocks.map(s=>s.ticker));
+
+  let html = '';
+
+  // ── HEADER ──
+  html += `
+    <div style="background:linear-gradient(135deg,#1a2540,#1e2d3a);border:1px solid rgba(61,217,235,0.2);border-radius:14px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Your Discovery Profile</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Monthly Budget</div>
+          <div style="font-size:15px;font-weight:800;color:#3dd9eb;">&lt; Rp 5 jt</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Goal</div>
+          <div style="font-size:15px;font-weight:800;color:#4f8ef7;">Financial Freedom</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Risk Profile</div>
+          <div style="font-size:15px;font-weight:800;color:#f0883e;">Moderate</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Horizon</div>
+          <div style="font-size:15px;font-weight:800;color:#3fb950;">Long-term</div>
+        </div>
+      </div>
+    </div>`;
+
+  // ── US ETFs ──
+  html += `<div style="display:flex;align-items:center;gap:8px;margin:4px 0 12px;">
+    <div style="width:3px;height:16px;border-radius:2px;background:#3dd9eb;"></div>
+    <span style="font-size:13px;font-weight:700;color:#3dd9eb;text-transform:uppercase;letter-spacing:0.8px;">🇺🇸 US ETFs — Recommended</span>
+  </div>`;
+
+  // Sort ETFs by freedom score
+  const sortedUS = [...INVESTMENT_UNIVERSE.usETFs]
+    .map(e => ({...e, score: freedomScore(e,'us'), lp: livePrices[e.ticker]}))
+    .sort((a,b) => b.score - a.score);
+
+  sortedUS.forEach(etf => {
+    const owned = ownedUS.has(etf.ticker);
+    const lp = etf.lp;
+    const priceStr = lp ? `$${lp.price.toFixed(2)}` : '—';
+    const changeStr = lp ? `${lp.change>=0?'+':''}${lp.change.toFixed(2)}%` : '';
+    const lotsAffordable = lp ? Math.floor((monthlyBudget/usdToIdr)/lp.price) : '?';
+    const tc = typeColors2[etf.type]||'#7d8590';
+    const rc = riskColors[etf.risk];
+
+    html += `<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;${owned?'border-color:rgba(63,185,80,0.3);':''}" >
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:${tc}18;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${tc};flex-shrink:0;">${etf.ticker}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-size:14px;font-weight:700;">${etf.name}</span>
+            ${owned?'<span style="font-size:10px;background:rgba(63,185,80,0.15);color:#3fb950;padding:2px 6px;border-radius:4px;font-weight:700;">✓ OWNED</span>':''}
+          </div>
+          <div style="display:flex;gap:5px;margin-top:4px;flex-wrap:wrap;">
+            <span style="font-size:10px;font-weight:700;color:${tc};background:${tc}15;padding:2px 6px;border-radius:4px;">${etf.type}</span>
+            <span style="font-size:10px;font-weight:700;color:${rc};background:${rc}15;padding:2px 6px;border-radius:4px;">${etf.risk} risk</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;">${priceStr}</div>
+          ${lp?`<div style="font-size:11px;font-weight:600;color:${lp.change>=0?'#3fb950':'#f85149'};">${changeStr}</div>`:''}
+        </div>
+      </div>
+      <!-- Freedom Score bar -->
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Freedom Score</span>
+          <span style="font-size:11px;font-weight:700;color:${etf.score>=80?'#3fb950':etf.score>=60?'#f0883e':'#f85149'}">${etf.score}/99</span>
+        </div>
+        <div style="height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;">
+          <div style="height:100%;width:${etf.score}%;background:linear-gradient(90deg,#4f8ef7,#3dd9eb);border-radius:99px;"></div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px;">💡 ${etf.why}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg3);border-radius:8px;">
+        <span style="font-size:11px;color:var(--muted);">With Rp 5 jt/month:</span>
+        <span style="font-size:12px;font-weight:700;color:#3dd9eb;">≈ ${lotsAffordable} shares/month</span>
+      </div>
+    </div>`;
+  });
+
+  // ── IDX STOCKS ──
+  html += `<div style="display:flex;align-items:center;gap:8px;margin:16px 0 12px;">
+    <div style="width:3px;height:16px;border-radius:2px;background:#f85149;"></div>
+    <span style="font-size:13px;font-weight:700;color:#f85149;text-transform:uppercase;letter-spacing:0.8px;">🇮🇩 IDX Stocks — Discovery</span>
+  </div>`;
+
+  const sortedIDX = [...INVESTMENT_UNIVERSE.idxStocks]
+    .map(s => ({...s, score: freedomScore(s,'idx'), lp: livePrices[s.ticker]}))
+    .sort((a,b) => b.score - a.score);
+
+  sortedIDX.forEach(stock => {
+    const owned = ownedIDX.has(stock.ticker);
+    const lp = stock.lp;
+    const priceStr = lp ? `Rp ${lp.price.toLocaleString('id-ID')}` : '—';
+    const changeStr = lp ? `${lp.change>=0?'+':''}${lp.change.toFixed(2)}%` : '';
+    const lotsAffordable = lp ? Math.floor(monthlyBudget/(lp.price*100)) : '?';
+    const tc = typeColors2[stock.type.split('+')[0]] || '#7d8590';
+    const rc = riskColors[stock.risk];
+
+    html += `<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;${owned?'border-color:rgba(63,185,80,0.3);':''}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:${tc}18;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${tc};flex-shrink:0;">${stock.ticker}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-size:14px;font-weight:700;">${stock.name}</span>
+            ${owned?'<span style="font-size:10px;background:rgba(63,185,80,0.15);color:#3fb950;padding:2px 6px;border-radius:4px;font-weight:700;">✓ OWNED</span>':''}
+          </div>
+          <div style="display:flex;gap:5px;margin-top:4px;flex-wrap:wrap;">
+            <span style="font-size:10px;color:var(--muted);">${stock.sector}</span>
+            <span style="font-size:10px;font-weight:700;color:${tc};background:${tc}15;padding:2px 6px;border-radius:4px;">${stock.type}</span>
+            <span style="font-size:10px;font-weight:700;color:${rc};background:${rc}15;padding:2px 6px;border-radius:4px;">${stock.risk} risk</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;">${priceStr}</div>
+          ${lp?`<div style="font-size:11px;font-weight:600;color:${lp.change>=0?'#3fb950':'#f85149'};">${changeStr}</div>`:''}
+        </div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Freedom Score</span>
+          <span style="font-size:11px;font-weight:700;color:${stock.score>=80?'#3fb950':stock.score>=60?'#f0883e':'#f85149'}">${stock.score}/99</span>
+        </div>
+        <div style="height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;">
+          <div style="height:100%;width:${stock.score}%;background:linear-gradient(90deg,#f85149,#f0883e);border-radius:99px;"></div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px;">💡 ${stock.why}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg3);border-radius:8px;">
+        <span style="font-size:11px;color:var(--muted);">With Rp 5 jt/month:</span>
+        <span style="font-size:12px;font-weight:700;color:#f0883e;">≈ ${lotsAffordable} lots/month</span>
+      </div>
+    </div>`;
+  });
+
+  // ── REKSA DANA ──
+  html += `<div style="display:flex;align-items:center;gap:8px;margin:16px 0 12px;">
+    <div style="width:3px;height:16px;border-radius:2px;background:#bc8cff;"></div>
+    <span style="font-size:13px;font-weight:700;color:#bc8cff;text-transform:uppercase;letter-spacing:0.8px;">📊 Reksa Dana — Best Picks</span>
+  </div>`;
+
+  INVESTMENT_UNIVERSE.reksadana.forEach(rd => {
+    const score = freedomScore(rd,'rd');
+    const tc = typeColors2[rd.type]||'#bc8cff';
+    const rc = riskColors[rd.risk];
+    html += `<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:#bc8cff18;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📈</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:700;line-height:1.3;margin-bottom:4px;">${rd.name}</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            <span style="font-size:10px;color:var(--muted);">${rd.category}</span>
+            <span style="font-size:10px;font-weight:700;color:${tc};background:${tc}15;padding:2px 6px;border-radius:4px;">${rd.type}</span>
+            <span style="font-size:10px;font-weight:700;color:${rc};background:${rc}15;padding:2px 6px;border-radius:4px;">${rd.risk} risk</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Freedom Score</span>
+          <span style="font-size:11px;font-weight:700;color:${score>=80?'#3fb950':score>=60?'#f0883e':'#f85149'}">${score}/99</span>
+        </div>
+        <div style="height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;">
+          <div style="height:100%;width:${score}%;background:linear-gradient(90deg,#bc8cff,#4f8ef7);border-radius:99px;"></div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px;">💡 ${rd.why}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg3);border-radius:8px;">
+        <span style="font-size:11px;color:var(--muted);">Min. investment:</span>
+        <span style="font-size:12px;font-weight:700;color:#bc8cff;">Rp ${rd.minRp.toLocaleString('id-ID')} via Bibit</span>
+      </div>
+    </div>`;
+  });
+
+  // ── MONTHLY PLAN ──
+  html += `
+    <div style="background:linear-gradient(135deg,#1a2540,#1e2d4a);border:1px solid rgba(79,142,247,0.25);border-radius:14px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px;">📅 Suggested Monthly Plan (Rp 5 jt)</div>
+      ${[
+        // Dynamic plan based on actual surplus and gaps
+      ...(()=>{
+        const surplus = state.manual.totalMonthlyIncome
+          ? state.manual.totalMonthlyIncome - (state.manual.monthlyExpenses||5000000)
+          : 18700000;
+        const usW  = Math.max(10, Math.min(40, US_GAP  * 2));
+        const rdW  = Math.max(10, Math.min(30, RD_GAP  * 1.5));
+        const idxW = Math.max(5,  Math.min(20, IDX_GAP * 2));
+        const kopW = 100 - usW - rdW - idxW;
+        const rp5 = n => 'Rp '+(n/1e6).toFixed(1)+' jt';
+        return [
+          {label:'US ETFs (QQQ + SCHD)',       amount:rp5(surplus*usW/100),  pct:usW,  color:'#3dd9eb', note:'Fill US gap — priority now'},
+          {label:'Reksa Dana (Obligasi/Saham)', amount:rp5(surplus*rdW/100),  pct:rdW,  color:'#bc8cff', note:'Managed exposure'},
+          {label:'IDX Diversify (TLKM/ASII)',  amount:rp5(surplus*idxW/100), pct:idxW, color:'#f85149', note:'Break banking concentration'},
+          {label:'Koperasi top-up',             amount:rp5(surplus*kopW/100), pct:kopW, color:'#4f8ef7', note:'Safe 7-10%/yr passive'},
+        ];
+      })(),
+      ].map(item=>`
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:12px;color:var(--text)">${item.label}</span>
+            <span style="font-size:12px;font-weight:700;color:${item.color}">${item.amount}</span>
+          </div>
+          <div style="height:5px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;">
+            <div style="height:100%;width:${item.pct}%;background:${item.color};border-radius:99px;"></div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${item.note}</div>
+        </div>`).join('')}
+    </div>`;
+
+  el.innerHTML = html;
+}
+
+// =============================================
+// FUNDAMENTALS — LIVE DATA FOR YOUR STOCKS
+// =============================================
+async function renderFundamentals() {
+  window._fundamentalsLoaded = true;
+  const el = document.getElementById('fundamentals-content');
+  el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--muted);">
+    <div style="font-size:32px;margin-bottom:12px;">📊</div>
+    <div style="font-size:14px;font-weight:600;">Fetching fundamentals...</div>
+  </div>`;
+
+  // Static fallback data (always shown; live data overwrites if available)
+  const data = {
+    'BBCA.JK': { name:'Bank Central Asia',      owned:true,  pe:18.2, roe:18.5, profitMargin:41.2, dividendYield:3.1, price:6475,   targetPrice:8200,  rec:'buy'       },
+    'BBRI.JK': { name:'Bank Rakyat Indonesia',  owned:true,  pe:9.8,  roe:19.2, profitMargin:28.4, dividendYield:6.8, price:3280,   targetPrice:4800,  rec:'buy'       },
+    'BMRI.JK': { name:'Bank Mandiri',           owned:true,  pe:8.9,  roe:20.1, profitMargin:32.1, dividendYield:7.2, price:4570,   targetPrice:6500,  rec:'buy'       },
+    'TLKM.JK': { name:'Telkom Indonesia',       owned:false, pe:14.1, roe:22.4, profitMargin:18.3, dividendYield:5.4, price:2840,   targetPrice:3500,  rec:'buy'       },
+    'ASII.JK': { name:'Astra International',    owned:false, pe:9.2,  roe:14.8, profitMargin:8.7,  dividendYield:4.8, price:4320,   targetPrice:5800,  rec:'buy'       },
+    'ICBP.JK': { name:'Indofood CBP',           owned:false, pe:12.3, roe:16.2, profitMargin:9.4,  dividendYield:3.2, price:10225,  targetPrice:12000, rec:'hold'      },
+    'QQQ':     { name:'Nasdaq100 ETF',          owned:true,  pe:28.4, roe:null, profitMargin:null,  dividendYield:0.6, price:457.32, targetPrice:520,   rec:'buy'       },
+    'SCHD':    { name:'Schwab Dividend ETF',    owned:false, pe:15.2, roe:null, profitMargin:null,  dividendYield:3.5, price:27.82,  targetPrice:32,    rec:'buy'       },
+    'VOO':     { name:'Vanguard S&P500',        owned:false, pe:22.1, roe:null, profitMargin:null,  dividendYield:1.3, price:498.12, targetPrice:560,   rec:'buy'       },
+    'VYM':     { name:'Vanguard High Dividend', owned:false, pe:16.4, roe:null, profitMargin:null,  dividendYield:2.9, price:128.44, targetPrice:145,   rec:'buy'       },
+  };
+
+  // Sync owned status from state
+  state.idxStocks.forEach(s => { if(data[s.ticker+'.JK']) data[s.ticker+'.JK'].owned = true; });
+  state.usStocks.forEach(s => { if(data[s.ticker]) data[s.ticker].owned = true; });
+
+  let liveLoaded = false;
+  // Try live API
+  const allTickers = Object.keys(data);
+  await Promise.allSettled(allTickers.map(async ticker => {
+    try {
+      const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=defaultKeyStatistics,financialData,summaryDetail`;
+      const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, {signal:AbortSignal.timeout(6000)});
+      const j = await r.json();
+      const d = JSON.parse(j.contents);
+      const res = d?.quoteSummary?.result?.[0];
+      if(res) {
+        const ks = res.defaultKeyStatistics||{};
+        const fd = res.financialData||{};
+        const sd = res.summaryDetail||{};
+        const livePrice = fd.currentPrice?.raw || sd.regularMarketPrice?.raw;
+        if(livePrice) {
+          data[ticker].price = livePrice;
+          data[ticker].pe = sd.trailingPE?.raw || ks.trailingPE?.raw || data[ticker].pe;
+          data[ticker].roe = fd.returnOnEquity?.raw ? fd.returnOnEquity.raw*100 : data[ticker].roe;
+          data[ticker].profitMargin = fd.profitMargins?.raw ? fd.profitMargins.raw*100 : data[ticker].profitMargin;
+          data[ticker].dividendYield = (sd.dividendYield?.raw || sd.trailingAnnualDividendYield?.raw || 0)*100 || data[ticker].dividendYield;
+          data[ticker].targetPrice = fd.targetMeanPrice?.raw || data[ticker].targetPrice;
+          data[ticker].rec = fd.recommendationKey || data[ticker].rec;
+          liveLoaded = true;
+        }
+      }
+    } catch(e) {}
+  }));
+
+  const recColors = {buy:'#3fb950',strongbuy:'#3fb950',hold:'#f0883e',sell:'#f85149',strongsell:'#f85149'};
+  const recLabels = {buy:'BUY',strongbuy:'STRONG BUY',hold:'HOLD',sell:'SELL',strongsell:'STRONG SELL'};
+
+  function mBar(val, min, max, good) {
+    if(val===null||val===undefined) return '<span style="color:var(--muted2);font-size:12px;">N/A</span>';
+    const v = Number(val);
+    const pct = Math.min(Math.max(((v-min)/(max-min))*100,0),100);
+    const isGood = good==='high' ? v>(min+max)/2 : v<(min+max)/2;
+    const col = isGood?'#3fb950':'#f0883e';
+    return `<div style="display:flex;align-items:center;gap:6px;">
+      <span style="font-size:12px;font-weight:700;color:${col};min-width:42px;">${v.toFixed(1)}</span>
+      <div style="flex:1;height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;">
+        <div style="height:100%;width:${good==='high'?pct:100-pct}%;background:${col};border-radius:99px;"></div>
+      </div>
+    </div>`;
+  }
+
+  function card(ticker, f) {
+    const rec = (f.rec||'').toLowerCase();
+    const rc = recColors[rec]||'#7d8590';
+    const rl = recLabels[rec]||(rec||'—').toUpperCase();
+    const isIDX = ticker.includes('.JK');
+    const upside = f.price&&f.targetPrice ? ((f.targetPrice-f.price)/f.price)*100 : null;
+    return `<div style="background:var(--card);border:1px solid ${f.owned?'rgba(63,185,80,0.25)':'var(--border)'};border-radius:14px;padding:14px 16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:42px;height:42px;border-radius:10px;background:${f.owned?'rgba(63,185,80,0.1)':'var(--bg3)'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${f.owned?'#3fb950':'var(--muted)'};">${ticker.replace('.JK','')}</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;">${f.name}</div>
+            <div style="display:flex;gap:5px;margin-top:2px;">
+              ${f.owned?'<span style="font-size:10px;background:rgba(63,185,80,0.1);color:#3fb950;padding:1px 6px;border-radius:4px;font-weight:700;">OWNED</span>':'<span style="font-size:10px;background:var(--bg3);color:var(--muted);padding:1px 6px;border-radius:4px;">WATCHLIST</span>'}
+              <span style="font-size:10px;color:var(--muted);">${isIDX?'IDX':'US'}</span>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;font-weight:800;color:${rc};background:${rc}15;padding:3px 8px;border-radius:6px;">${rl}</div>
+          ${upside!==null?`<div style="font-size:11px;font-weight:600;color:${upside>0?'#3fb950':'#f85149'};margin-top:3px;">${upside>0?'+':''}${upside.toFixed(1)}% upside</div>`:''}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">P/E Ratio</div>${mBar(f.pe,0,40,'low')}<div style="font-size:10px;color:var(--muted);margin-top:1px;">Lower = cheaper</div></div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">ROE %</div>${mBar(f.roe,0,30,'high')}<div style="font-size:10px;color:var(--muted);margin-top:1px;">Higher = efficient</div></div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">Profit Margin %</div>${mBar(f.profitMargin,0,50,'high')}</div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">Dividend Yield %</div>${mBar(f.dividendYield,0,8,'high')}</div>
+      </div>
+      ${f.price&&f.targetPrice?`<div style="padding:8px 10px;background:var(--bg3);border-radius:8px;display:flex;justify-content:space-between;">
+        <span style="font-size:11px;color:var(--muted)">Now: <b style="color:var(--text)">${isIDX?'Rp '+Math.round(f.price).toLocaleString('id-ID'):'$'+Number(f.price).toFixed(2)}</b></span>
+        <span style="font-size:11px;color:var(--muted)">Target: <b style="color:${upside>0?'#3fb950':'#f85149'}">${isIDX?'Rp '+Math.round(f.targetPrice).toLocaleString('id-ID'):'$'+Number(f.targetPrice).toFixed(2)}</b></span>
+      </div>`:''}
+    </div>`;
+  }
+
+  const ownedList = Object.entries(data).filter(([k,v])=>v.owned);
+  const watchList = Object.entries(data).filter(([k,v])=>!v.owned);
+
+  let html = `<div style="background:${liveLoaded?'rgba(63,185,80,0.06)':'rgba(240,136,62,0.06)'};border:1px solid ${liveLoaded?'rgba(63,185,80,0.2)':'rgba(240,136,62,0.2)'};border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start;">
+    <span style="font-size:18px;">${liveLoaded?'📡':'📋'}</span>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:${liveLoaded?'#3fb950':'#f0883e'};margin-bottom:2px;">${liveLoaded?'Live Data Loaded':'Showing Cached Data'}</div>
+      <div style="font-size:12px;color:var(--muted);">${liveLoaded?'Real-time from Yahoo Finance.':'Open in Safari for live data. Showing last known fundamentals.'} Lower P/E = cheaper. Higher ROE = more efficient.</div>
+      ${!liveLoaded?`<button onclick="window._fundamentalsLoaded=false;renderFundamentals();" style="margin-top:8px;padding:6px 14px;background:var(--blue2);color:white;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">↻ Retry Live</button>`:''}
+    </div>
+  </div>`;
+
+  if(ownedList.length>0){
+    html+=`<div style="display:flex;align-items:center;gap:8px;margin:4px 0 12px;"><div style="width:3px;height:16px;border-radius:2px;background:#3fb950;"></div><span style="font-size:13px;font-weight:700;color:#3fb950;text-transform:uppercase;letter-spacing:0.8px;">Your Holdings</span></div>`;
+    html+=ownedList.map(([t,f])=>card(t,f)).join('');
+  }
+  if(watchList.length>0){
+    html+=`<div style="display:flex;align-items:center;gap:8px;margin:16px 0 12px;"><div style="width:3px;height:16px;border-radius:2px;background:#4f8ef7;"></div><span style="font-size:13px;font-weight:700;color:#4f8ef7;text-transform:uppercase;letter-spacing:0.8px;">Watchlist</span></div>`;
+    html+=watchList.map(([t,f])=>card(t,f)).join('');
+  }
+
+  el.innerHTML = html;
+}
+
+
+
+
+// =============================================
+// INCOME & EXPENSE MANAGEMENT
+// =============================================
+// previewIncome removed - income auto-calculated from PayPal
+
+// saveIncome removed - income auto-calculated from PayPal
+
+function updateIncomePlaceholders() {
+  const t = document.getElementById('input-total-income');
+  const e = document.getElementById('input-expenses');
+  if(t) t.placeholder = 'Current: ' + rp(state.manual.totalMonthlyIncome || 23730000);
+  if(e) e.placeholder = 'Current: ' + rp(state.manual.monthlyExpenses || 5000000);
+
+  // Show last month PayPal balance
+  const prevEl = document.getElementById('paypal-prev-val');
+  if(prevEl) prevEl.textContent = (state.manual.paypalPrevBalance || 0).toFixed(2);
+
+  // Show withdrawal placeholder
+  const wdEl = document.getElementById('input-paypal-withdrawal');
+  if(wdEl) wdEl.placeholder = (state.manual.paypalWithdrawals || 0).toFixed(2);
+}
+
+function calcPaypalIncome() {
+  const endBal  = parseFloat(document.getElementById('input-paypal').value) || 0;
+  const prevBal = state.manual.paypalPrevBalance || state.manual.paypalUSD || 0;
+
+  if(!endBal) {
+    document.getElementById('paypal-income-preview').style.display = 'none';
+    document.getElementById('paypal-income-display').textContent = '$—';
+    return;
+  }
+
+  // Income = end balance - start balance (withdrawals already go to Cash)
+  const income    = endBal - prevBal;
+  const incomeIDR = income * (state.usdToIdr || 16400);
+
+  document.getElementById('paypal-income-display').textContent =
+    (income >= 0 ? '+' : '') + '$' + income.toFixed(2);
+  document.getElementById('paypal-income-display').style.color =
+    income >= 0 ? '#3fb950' : '#f0883e';
+
+  const preview = document.getElementById('paypal-income-preview');
+  preview.style.display = 'block';
+  preview.innerHTML =
+    '📊 Last month: <b style="color:var(--text)">$' + prevBal.toFixed(2) + '</b>' +
+    ' → This month: <b style="color:var(--text)">$' + endBal.toFixed(2) + '</b><br>' +
+    '💰 PayPal income: <b style="color:#3fb950">' +
+    (income >= 0 ? '+' : '') + '$' + income.toFixed(2) +
+    ' ≈ ' + (income >= 0 ? '+' : '') + rp(Math.abs(incomeIDR)) + '</b>';
+}
+
+// Toast notification
+function showToast(msg, duration=2800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// =============================================
+// INIT
+// =============================================
+loadState();
+renderAll();
+doRefresh();
+</script>
+</body>
+</html>
