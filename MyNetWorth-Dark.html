@@ -782,16 +782,17 @@ let state = {
   usdToIdr: 16400,
   lastFetch: null,
   manual: {
-    paypalUSD: 4121.52,
-    cash: 55000000,
-    koperasi: 215000000,
+    paypalUSD: 4169.02,
+    cash: 52635678,
+    koperasi: 214570327,
     tanah: 210000000,
     bibitTotal: 177367076,  // F The Money reksa dana only (updated April 2026)
     // Income & expenses — editable
-    totalMonthlyIncome: 23730000,  // salary + PayPal + all sources combined
+    monthlySalary: 6825000,        // 9-5 job salary
+    totalMonthlyIncome: 23730000,  // salary + PayPal combined
     monthlyExpenses: 5000000,
     // PayPal income tracking
-    paypalPrevBalance: 972.03,     // balance at start of month (from last month's ending)
+    paypalPrevBalance: 4169.02,    // current balance — becomes start of next month
     paypalWithdrawals: 0,          // withdrawals to bank this month (USD)
   },
   idxStocks: [
@@ -839,9 +840,15 @@ let state = {
     },
   ],
   otherAssets: [
-    { id:'oa1', name:'PayPal Balance', currency:'USD', value:4121.52, icon:'💵', notes:'Linked to BCA 7687' },
-    { id:'oa2', name:'Cash / Tabungan', currency:'IDR', value:55000000, icon:'🏦', notes:'Bank savings' },
-    { id:'oa3', name:'Koperasi', currency:'IDR', value:215000000, icon:'🤝', notes:'7–10%/yr interest' },
+    { id:'oa1', name:'PayPal Balance', currency:'USD', value:4169.02, icon:'💵', notes:'Linked to BCA 7687' },
+    { id:'oa2', name:'Cash / Tabungan', currency:'IDR', value:52635678, icon:'🏦', notes:'Bank savings' },
+    { id:'oa3', name:'Koperasi', currency:'IDR', value:214570327, icon:'🤝', notes:'7-10%/yr interest' },
+    { id:'oa4', name:'Tanah', currency:'IDR', value:210000000, icon:'⛺', notes:'~5% appreciation/yr' },
+  ],
+  otherAssets: [
+    { id:'oa1', name:'PayPal Balance', currency:'USD', value:4169.02, icon:'💵', notes:'Linked to BCA 7687' },
+    { id:'oa2', name:'Cash / Tabungan', currency:'IDR', value:52635678, icon:'🏦', notes:'Bank savings' },
+    { id:'oa3', name:'Koperasi', currency:'IDR', value:214570327, icon:'🤝', notes:'7–10%/yr interest' },
     { id:'oa4', name:'Tanah', currency:'IDR', value:210000000, icon:'🏕️', notes:'~5% appreciation/yr' },
   ],
   editMode: null, editId: null,
@@ -1450,10 +1457,14 @@ function saveManualAssets(){
   const prev=calc().total;
 
   // Auto-calculate PayPal income = end balance - last month's balance
-  const prevPaypalBal  = state.manual.paypalPrevBalance || state.manual.paypalUSD || 0;
+  const prevPaypalBal   = state.manual.paypalPrevBalance || state.manual.paypalUSD || 0;
   const paypalIncomeUSD = paypal - prevPaypalBal;
   const paypalIncomeIDR = paypalIncomeUSD * (state.usdToIdr || 16400);
-  const newTotalIncome  = Math.max(0, Math.round(paypalIncomeIDR)); // pure PayPal income this month
+  // Total monthly income = salary + this month's PayPal income
+  const salary = state.manual.monthlySalary || 6_825_000;
+  const newTotalIncome = paypalIncomeIDR > 0
+    ? Math.round(salary + paypalIncomeIDR)
+    : (state.manual.totalMonthlyIncome || 23_730_000); // keep previous if no change
 
   state.manual={
     ...state.manual,
@@ -1760,9 +1771,9 @@ function getGoals() {
     freedomTarget: 3_000_000_000,
     freedomMonthly: 25_000_000,
     totalMonthlyIncome: state.manual.totalMonthlyIncome || 23_730_000,
-    monthlySalary:  6_825_000,   // kept for reference in action text
+    monthlySalary:  state.manual.monthlySalary  || 6_825_000,
     monthlyPayPal:  state.manual.totalMonthlyIncome
-                    ? state.manual.totalMonthlyIncome - 6_825_000
+                    ? state.manual.totalMonthlyIncome - (state.manual.monthlySalary||6_825_000)
                     : 16_905_284,
     monthlyExpense: state.manual.monthlyExpenses || 5_000_000,
     paypalUSD: state.manual.paypalUSD || 4121.52,
